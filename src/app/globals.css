@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #06080f;
+  --amber: #fba82b;
+  --pink: #fb2b7e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  background: var(--bg);
+  color: #f9fafb;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+@media print {
+  /* Lift the game's overflow/height lock so content can paginate */
+  html, body { overflow: visible !important; height: auto !important; }
+
+  /* Hide everything in body — the print button moves the card to body first */
+  body > * { display: none !important; }
+
+  /* Card is a direct body child when printing — show it */
+  #portfolio-print-root {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 2rem !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: white !important;
+    color: #111 !important;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  #portfolio-print-root * {
+    background: transparent !important;
+    color: #111 !important;
+    border-color: #e5e7eb !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .no-print { display: none !important; }
+
+  #portfolio-print-root h1 { color: #92600a !important; }
+  #portfolio-print-root .rounded-full { background: #92600a !important; }
 }
