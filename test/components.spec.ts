@@ -73,10 +73,19 @@ describe('PixelDissolve', () => {
 })
 
 describe('PixelMeter', () => {
-  it('fills the requested number of segments', () => {
+  it('fills the requested proportion, as one node rather than many', () => {
     const wrapper = mount(PixelMeter, { props: { value: 4, label: 'English' } })
-    expect(wrapper.findAll('.meter__seg')).toHaveLength(5)
-    expect(wrapper.findAll('.meter__seg.is-on')).toHaveLength(4)
+    const style = wrapper.attributes('style') ?? ''
+    expect(style).toContain('--meter-fill: 80%')
+    expect(style).toContain('--meter-count: 5')
+    expect(wrapper.element.children).toHaveLength(0)
+  })
+
+  it('clamps a value outside the scale', () => {
+    const over = mount(PixelMeter, { props: { value: 9, max: 5, label: 'x' } })
+    expect(over.attributes('style')).toContain('--meter-fill: 100%')
+    const under = mount(PixelMeter, { props: { value: -2, max: 5, label: 'x' } })
+    expect(under.attributes('style')).toContain('--meter-fill: 0%')
   })
 
   it('exposes meter semantics to assistive tech', () => {

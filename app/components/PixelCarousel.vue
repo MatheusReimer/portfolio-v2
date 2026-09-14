@@ -108,7 +108,9 @@ defineExpose({ goTo, next, prev })
         <slot :index="i - 1" :is-active="active === i - 1" />
       </div>
 
-      <PixelDissolve :active="covered" :columns="18" :rows="12" :duration="COVER_MS" />
+      <!-- 12x8 is as fine as the curtain needs to be: finer grids read the
+           same at this size and cost a node each. -->
+      <PixelDissolve :active="covered" :columns="12" :rows="8" :duration="COVER_MS" />
     </div>
 
     <div class="carousel__controls">

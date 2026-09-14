@@ -8,7 +8,7 @@ import { mail, socialIcons, terminal } from '~/data/sprites'
     <div class="px-shell">
       <SectionHeading index="05" title="Get In Touch" :icon="terminal" />
 
-      <div v-reveal class="contact px-frame px-frame--accent px-frame--raised">
+      <div class="contact px-frame px-frame--accent px-frame--raised">
         <p class="contact__lead px-display">
           Open to new opportunities.
         </p>

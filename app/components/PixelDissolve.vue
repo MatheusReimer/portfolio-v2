@@ -88,7 +88,7 @@ const blocks = computed(() =>
 }
 
 .dissolve__blk {
-  background: var(--c-panel-2);
+  background: var(--dissolve-fill, var(--c-panel-2));
   opacity: 0;
   /* 1ms + steps(1) means the block snaps; the delay is what animates. */
   transition: opacity 1ms steps(1, end);

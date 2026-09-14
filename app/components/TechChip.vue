@@ -18,13 +18,13 @@ const iconUri = computed(() => (icon.value ? spriteToDataUri(icon.value) : null)
 </script>
 
 <template>
-  <span class="tech">
-    <!-- The icon cell is always present, even when empty, so the labels in a
-         column line up whether or not a sprite exists for that technology. -->
-    <span
-      class="tech__icon"
-      :style="iconUri ? { backgroundImage: `url(&quot;${iconUri}&quot;)` } : undefined"
-    />
+  <!-- The icon is a pseudo-element fed by a custom property. It reserves its
+       cell whether or not a sprite exists, so labels line up down a column —
+       and costs no DOM node, which matters when the page carries eighty chips. -->
+  <span
+    class="tech"
+    :style="iconUri ? { '--tech-icon': `url(&quot;${iconUri}&quot;)` } : undefined"
+  >
     <span class="tech__name">{{ name }}</span>
   </span>
 </template>
@@ -68,11 +68,12 @@ const iconUri = computed(() => (icon.value ? spriteToDataUri(icon.value) : null)
   background: var(--c-line);
 }
 
-.tech__icon {
+.tech::before {
+  content: '';
   flex: none;
-  display: block;
   width: 16px;
   height: 16px;
+  background-image: var(--tech-icon, none);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
