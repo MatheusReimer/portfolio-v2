@@ -13,7 +13,7 @@ import { gear } from '~/data/sprites'
         blurb="Five areas I would happily be interviewed on. Open one for the work that backs it."
       />
 
-      <div class="cap__sheet">
+      <div v-reveal class="cap__sheet">
         <CapabilitySheet />
       </div>
 

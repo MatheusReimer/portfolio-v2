@@ -157,17 +157,27 @@ ul {
 }
 
 /* --- Scroll reveal --------------------------------------------------------
+   An element arrives the way a sprite does: two hard frames, offset by whole
+   pixels, over a fifth of a second. Short and small on purpose.
+
+   An earlier version covered whole sections with a dither curtain and cleared
+   it as they scrolled in. It read as a bug, and unavoidably so — a blank
+   rectangle where content should be is indistinguishable from content that
+   failed to load, however deliberate the intent behind it. Nothing here hides
+   content: elements are only ever offset and stepped into place.
+
    Progressive enhancement: the hidden state only applies once the inline
    bootstrap script has marked the document as scripted. With JS off or broken,
-   every section renders normally — the content is never gated behind an
-   animation.
+   every section renders normally.
    ------------------------------------------------------------------------ */
 
 .js .px-reveal {
   opacity: 0;
   /* Whole pixels only, so the element steps into place instead of sliding. */
-  transform: translateY(12px);
-  transition: opacity var(--step-slow), transform var(--step-slow);
+  transform: translateY(8px);
+  transition:
+    opacity 180ms steps(2, end),
+    transform 180ms steps(2, end);
 }
 
 .js .px-reveal.is-in {
@@ -175,10 +185,27 @@ ul {
   transform: translateY(0);
 }
 
+/* The rule under a section heading draws itself in, left to right, in steps.
+   It is decoration rather than content, so a line mid-draw can only read as a
+   flourish — there is nothing missing for it to look like. */
+.js .px-reveal .px-rule {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 460ms steps(14, end) 120ms;
+}
+
+.js .px-reveal.is-in .px-rule {
+  transform: scaleX(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .js .px-reveal {
     opacity: 1;
     transform: none;
+  }
+
+  .js .px-reveal .px-rule {
+    transform: scaleX(1);
   }
 }
 

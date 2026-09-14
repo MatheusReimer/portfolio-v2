@@ -6,7 +6,7 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 </script>
 
 <template>
-  <article class="entry">
+  <article v-reveal class="entry">
     <div class="entry__rail" aria-hidden="true">
       <span class="entry__node" :class="{ 'entry__node--current': isCurrent }" />
       <span class="entry__line" />

@@ -40,14 +40,10 @@ useHead({
 <template>
   <div>
     <HeroSection />
-
-    <!-- Each section assembles itself out of pixel blocks as it arrives. The
-         hero is excluded: it is on screen at load, and nothing the reader can
-         already see should be covered up in order to be revealed. -->
-    <PixelBuild><ExperienceSection /></PixelBuild>
-    <PixelBuild><WorkSection /></PixelBuild>
-    <PixelBuild><CapabilitiesSection /></PixelBuild>
-    <PixelBuild><AboutSection /></PixelBuild>
-    <PixelBuild><ContactSection /></PixelBuild>
+    <ExperienceSection />
+    <WorkSection />
+    <CapabilitiesSection />
+    <AboutSection />
+    <ContactSection />
   </div>
 </template>

@@ -13,7 +13,7 @@ withDefaults(
 </script>
 
 <template>
-  <div class="head">
+  <div v-reveal class="head">
     <div class="px-section__head">
       <span class="px-section__index" aria-hidden="true">{{ index }}</span>
       <PixelSprite v-if="icon" :sprite="icon" :scale="3" class="head__icon" />
