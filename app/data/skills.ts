@@ -5,6 +5,14 @@ export interface Capability {
   description: string
   evidence: string[]
   tools: string[]
+  /**
+   * First year this was applied in production.
+   *
+   * The stat bar is driven by elapsed years rather than a self-assessed score.
+   * A self-rated "90% performance" bar is unfalsifiable and invites scepticism;
+   * "applied since 2023" is a fact someone can interrogate in an interview.
+   */
+  since: number
 }
 
 export interface TechGroup {
@@ -17,6 +25,7 @@ export interface TechGroup {
 export const capabilities: Capability[] = [
   {
     id: 'performance',
+    since: 2023,
     name: 'Performance Engineering',
     summary: 'Measurable speed gains on real production traffic.',
     description:
@@ -31,6 +40,7 @@ export const capabilities: Capability[] = [
   },
   {
     id: 'scalability',
+    since: 2023,
     name: 'Scalability Engineering',
     summary: 'Systems that absorb traffic growth without a rewrite.',
     description:
@@ -45,6 +55,7 @@ export const capabilities: Capability[] = [
   },
   {
     id: 'frontend-architecture',
+    since: 2021,
     name: 'Front-End Architecture',
     summary: 'Codebases that scale with the team, not just the traffic.',
     description:
@@ -59,6 +70,7 @@ export const capabilities: Capability[] = [
   },
   {
     id: 'ai-delivery',
+    since: 2024,
     name: 'AI-Assisted Delivery',
     summary: 'AI as production tooling, not as a demo.',
     description:
@@ -73,6 +85,7 @@ export const capabilities: Capability[] = [
   },
   {
     id: 'system-design',
+    since: 2021,
     name: 'System Design',
     summary: 'Thinking in trade-offs rather than in solutions.',
     description:
@@ -114,3 +127,11 @@ export const stack: TechGroup[] = [
     items: ['Google Gemini', 'Claude', 'LLM pipelines', 'Prompt design'],
   },
 ]
+
+/** Segments on the capability stat bars. Six keeps a five-year run off the cap. */
+export const CAPABILITY_MAX_YEARS = 6
+
+/** Whole years since a capability was first applied, floored at one. */
+export function yearsApplied(cap: Capability, now = new Date().getFullYear()): number {
+  return Math.max(1, now - cap.since)
+}
