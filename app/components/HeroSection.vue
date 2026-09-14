@@ -19,7 +19,9 @@ const statIcons = [bars, bolt, diamond, calendar]
 
 <template>
   <section id="top" class="hero">
-    <div class="px-shell">
+    <PixelScene />
+
+    <div class="px-shell hero__content">
       <div class="hero__grid">
         <div class="hero__sprite px-frame px-frame--raised">
           <!-- Two frames stacked; CSS cross-fades them in hard steps so the
@@ -102,7 +104,19 @@ const statIcons = [bars, bolt, diamond, calendar]
 
 <style scoped>
 .hero {
-  padding-block: clamp(48px, 8vw, 96px) clamp(40px, 6vw, 72px);
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(64px, 10vw, 128px) clamp(40px, 6vw, 72px);
+  /* The scene needs vertical room to read as a space rather than a strip. */
+  min-height: clamp(560px, 82vh, 860px);
+  display: flex;
+  align-items: center;
+  border-bottom: var(--px) solid var(--c-line);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
 }
 
 .hero__grid {
@@ -116,6 +130,7 @@ const statIcons = [bars, bolt, diamond, calendar]
   flex: none;
   padding: var(--px3);
   background: var(--c-panel-2);
+  z-index: 1;
 }
 
 /* --- Blinking sprite ----------------------------------------------------- */
@@ -187,8 +202,15 @@ const statIcons = [bars, bolt, diamond, calendar]
 }
 
 .hero__name {
-  font-size: clamp(34px, 7vw, 68px);
+  font-size: clamp(40px, 9vw, 92px);
+  letter-spacing: 0.04em;
   margin-bottom: var(--px2);
+  /* A hard pixel drop shadow, so the name sits on top of the scene. */
+  text-shadow:
+    var(--px) var(--px) 0 var(--c-void),
+    calc(-1 * var(--px)) var(--px) 0 var(--c-void),
+    var(--px) calc(-1 * var(--px)) 0 var(--c-void),
+    calc(-1 * var(--px)) calc(-1 * var(--px)) 0 var(--c-void);
 }
 
 .hero__role {
@@ -247,6 +269,8 @@ const statIcons = [bars, bolt, diamond, calendar]
 
 .stat {
   padding: var(--px3) var(--px4);
+  background: color-mix(in srgb, var(--c-panel) 88%, transparent);
+  backdrop-filter: blur(2px);
 }
 
 .stat__top {

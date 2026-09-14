@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { spriteToDataUri } from '~/data/sprites'
 import { techIcon } from '~/data/techSprites'
 
 /**
@@ -10,11 +11,19 @@ import { techIcon } from '~/data/techSprites'
 const props = defineProps<{ name: string }>()
 
 const icon = computed(() => techIcon(props.name))
+
+/* Rendered as a background image rather than inline rects: a 16x16 icon is
+   ~30 nodes, and these chips repeat dozens of times across the page. */
+const iconUri = computed(() => (icon.value ? spriteToDataUri(icon.value) : null))
 </script>
 
 <template>
   <span class="tech" :class="{ 'tech--iconed': icon }">
-    <PixelSprite v-if="icon" :sprite="icon" :scale="1" class="tech__icon" />
+    <span
+      v-if="iconUri"
+      class="tech__icon"
+      :style="{ backgroundImage: `url(&quot;${iconUri}&quot;)` }"
+    />
     {{ name }}
   </span>
 </template>
@@ -46,9 +55,11 @@ const icon = computed(() => techIcon(props.name))
 
 .tech__icon {
   flex: none;
+  display: block;
   width: 16px;
   height: 16px;
-  /* Sprites are authored at 16x16; render them 1:1 and let the box size it. */
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   image-rendering: pixelated;
 }
 </style>

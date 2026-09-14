@@ -82,3 +82,34 @@ describe('PixelSprite', () => {
     expect(wrapper.attributes('aria-hidden')).toBeUndefined()
   })
 })
+
+describe('PixelSprite monochrome path', () => {
+  it('renders single-colour icons as one masked node, not a pile of rects', () => {
+    const wrapper = mount(PixelSprite, { props: { sprite: sprites.chevron, scale: 2 } })
+    expect(wrapper.findAll('rect')).toHaveLength(0)
+    expect(wrapper.classes()).toContain('sprite-mask')
+    expect(wrapper.attributes('style')).toContain('mask-image')
+  })
+
+  it('sizes the masked node from the grid and scale', () => {
+    const wrapper = mount(PixelSprite, { props: { sprite: sprites.chevron, scale: 3 } })
+    const style = wrapper.attributes('style') ?? ''
+    expect(style).toContain('width: 24px')
+    expect(style).toContain('height: 24px')
+  })
+
+  it('keeps the same aria contract as the SVG path', () => {
+    const bare = mount(PixelSprite, { props: { sprite: sprites.mail } })
+    expect(bare.attributes('aria-hidden')).toBe('true')
+
+    const labelled = mount(PixelSprite, { props: { sprite: sprites.mail, label: 'Email' } })
+    expect(labelled.attributes('role')).toBe('img')
+    expect(labelled.attributes('aria-label')).toBe('Email')
+  })
+
+  it('still renders multi-colour sprites as rects', () => {
+    const wrapper = mount(PixelSprite, { props: { sprite: avatar } })
+    expect(wrapper.findAll('rect').length).toBeGreaterThan(0)
+    expect(wrapper.element.tagName.toLowerCase()).toBe('svg')
+  })
+})

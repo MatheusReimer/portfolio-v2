@@ -338,3 +338,108 @@ export const socialIcons: Record<string, Sprite> = {
   github: branch,
   linkedin: badge,
 }
+
+/* --- Serialisation --------------------------------------------------------
+   A 16x16 tech icon costs 25-40 rects. With ~46 chips on the page that is well
+   over a thousand nodes for decoration nothing interacts with, so chips render
+   their icon as a background image instead. Memoised: the same handful of
+   sprites repeat all over the page.
+   ------------------------------------------------------------------------ */
+
+const uriCache = new WeakMap<Sprite, string>()
+
+/** A sprite as an SVG data URI, with horizontal runs merged as in PixelSprite. */
+export function spriteToDataUri(sprite: Sprite): string {
+  const cached = uriCache.get(sprite)
+  if (cached) return cached
+
+  const width = sprite.rows[0]?.length ?? 0
+  const height = sprite.rows.length
+  const parts: string[] = []
+
+  sprite.rows.forEach((row, y) => {
+    let start = 0
+    let current = ''
+
+    const flush = (end: number) => {
+      if (!current) return
+      const fill = sprite.palette[current]
+      if (fill) {
+        parts.push(
+          `<rect x="${start}" y="${y}" width="${end - start}" height="1" fill="${fill}"/>`,
+        )
+      }
+    }
+
+    for (let x = 0; x < row.length; x++) {
+      const ch = row[x] ?? '.'
+      if (ch !== current) {
+        flush(x)
+        current = ch === '.' ? '' : ch
+        start = x
+      }
+    }
+    flush(row.length)
+  })
+
+  const svg
+    = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" `
+      + `shape-rendering="crispEdges">${parts.join('')}</svg>`
+  const uri = `data:image/svg+xml,${encodeURIComponent(svg)}`
+
+  uriCache.set(sprite, uri)
+  return uri
+}
+
+/**
+ * A sprite as a mask data URI.
+ *
+ * Single-colour icons cannot become background images without baking a colour
+ * in, which would lose `currentColor` tinting. A mask keeps the tint — the
+ * element paints `currentColor` and the mask cuts the shape out of it — while
+ * still collapsing ~30 rects into one node.
+ */
+const maskCache = new WeakMap<Sprite, string>()
+
+export function spriteToMaskUri(sprite: Sprite): string {
+  const cached = maskCache.get(sprite)
+  if (cached) return cached
+
+  const width = sprite.rows[0]?.length ?? 0
+  const height = sprite.rows.length
+  const parts: string[] = []
+
+  sprite.rows.forEach((row, y) => {
+    let start = 0
+    let on = false
+
+    const flush = (end: number) => {
+      if (!on) return
+      parts.push(`<rect x="${start}" y="${y}" width="${end - start}" height="1"/>`)
+    }
+
+    for (let x = 0; x < row.length; x++) {
+      const filled = (row[x] ?? '.') !== '.'
+      if (filled !== on) {
+        flush(x)
+        on = filled
+        start = x
+      }
+    }
+    flush(row.length)
+  })
+
+  const svg
+    = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" `
+      + `shape-rendering="crispEdges" fill="#000">${parts.join('')}</svg>`
+  const uri = `data:image/svg+xml,${encodeURIComponent(svg)}`
+
+  maskCache.set(sprite, uri)
+  return uri
+}
+
+/** True when every colour in the palette is currentColor. */
+export function isMonochrome(sprite: Sprite): boolean {
+  const values = Object.values(sprite.palette)
+  return values.length > 0 && values.every(v => v === 'currentColor')
+}

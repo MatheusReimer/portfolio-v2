@@ -7,7 +7,9 @@ const slideLabels = projects.map(p => p.title)
 
 <template>
   <section id="work" class="px-section work">
-    <div class="px-shell">
+    <PixelScene variant="quiet" :intensity="0.5" />
+
+    <div class="px-shell work__content">
       <SectionHeading
         index="02"
         title="Selected Work"
@@ -35,8 +37,15 @@ const slideLabels = projects.map(p => p.title)
 
 <style scoped>
 .work {
+  position: relative;
+  isolation: isolate;
   background: var(--c-void);
   border-block: var(--px) solid var(--c-line);
+}
+
+.work__content {
+  position: relative;
+  z-index: 1;
 }
 
 /* The raised card frame casts 8px of shadow and the carousel stage clips

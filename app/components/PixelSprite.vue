@@ -2,6 +2,7 @@
 // Imported explicitly rather than relying on Nuxt's auto-import, so this
 // component can be unit-tested outside the Nuxt runtime.
 import { computed } from 'vue'
+import { isMonochrome, spriteToMaskUri } from '~/data/sprites'
 import type { Sprite } from '~/data/sprites'
 
 interface Props {
@@ -17,6 +18,16 @@ const props = withDefaults(defineProps<Props>(), { scale: 4, label: undefined })
 const width = computed(() => props.sprite.rows[0]?.length ?? 0)
 const height = computed(() => props.sprite.rows.length)
 
+/**
+ * Single-colour icons render as one masked element rather than a pile of
+ * rects. There are well over a hundred icon instances on the page; at ~30
+ * nodes each that is most of the document. The mask preserves currentColor
+ * tinting, which a background image could not.
+ */
+const mask = computed(() =>
+  isMonochrome(props.sprite) ? spriteToMaskUri(props.sprite) : null,
+)
+
 interface Run {
   x: number
   y: number
@@ -29,6 +40,8 @@ interface Run {
  * pixel render is correct but wasteful; this typically cuts node count by 4-6x.
  */
 const runs = computed<Run[]>(() => {
+  if (mask.value) return []
+
   const out: Run[] = []
 
   props.sprite.rows.forEach((row, y) => {
@@ -57,7 +70,22 @@ const runs = computed<Run[]>(() => {
 </script>
 
 <template>
+  <span
+    v-if="mask"
+    class="sprite-mask"
+    :style="{
+      width: `${width * scale}px`,
+      height: `${height * scale}px`,
+      maskImage: `url(&quot;${mask}&quot;)`,
+      WebkitMaskImage: `url(&quot;${mask}&quot;)`,
+    }"
+    :role="label ? 'img' : undefined"
+    :aria-label="label"
+    :aria-hidden="label ? undefined : 'true'"
+  />
+
   <svg
+    v-else
     :width="width * scale"
     :height="height * scale"
     :viewBox="`0 0 ${width} ${height}`"
@@ -78,3 +106,14 @@ const runs = computed<Run[]>(() => {
     />
   </svg>
 </template>
+
+<style scoped>
+.sprite-mask {
+  display: block;
+  background-color: currentColor;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+}
+</style>
