@@ -1,10 +1,11 @@
 /* =============================================================================
-   Pixel design system
+   Pixel design system — CRT phosphor
    -----------------------------------------------------------------------------
    Everything snaps to a 4px pixel unit. No border-radius, no blurred shadows,
    no smooth easing — edges are hard and motion is stepped, the way a sprite
-   moves. Legibility is protected by keeping pixel type to headings and labels
-   and setting all running prose in Inter.
+   moves. Legibility is protected by keeping pixel type to headings and labels,
+   setting all running prose in Inter, and never using saturated green for
+   body copy (phosphor green on black is atmospheric but tiring to read).
    ========================================================================== */
 
 /* --- Tokens --------------------------------------------------------------- */
@@ -17,19 +18,23 @@
   --px4: 16px;
 
   /* Limited palette — a console palette, not a gradient ramp. */
-  --c-void: #07090f;
-  --c-bg: #0d111c;
-  --c-panel: #141a29;
-  --c-panel-2: #1c2438;
-  --c-line: #2b3654;
-  --c-line-hi: #3d4c73;
-  --c-dim: #8492b8;
-  --c-text: #c2ccE4;
-  --c-bright: #eef3ff;
-  --c-accent: #ffb43f;
-  --c-accent-dim: #8a6021;
-  --c-ok: #5ddb9a;
-  --c-shadow: #05070c;
+  --c-void: #050705;
+  --c-bg: #0a0f0a;
+  --c-panel: #0f170f;
+  --c-panel-2: #142014;
+  --c-line: #1e3320;
+  --c-line-hi: #2f5333;
+
+  /* Text ramp. Prose sits well above the saturated accent in lightness. */
+  --c-faint: #5f9463;
+  --c-dim: #7fb584;
+  --c-text: #a8d4ab;
+  --c-bright: #d8ffd9;
+
+  --c-accent: #3bf07a;
+  --c-accent-dim: #1d6b3a;
+  --c-amber: #ffb000;
+  --c-shadow: #030503;
 
   --font-display: 'Pixelify Sans', 'Courier New', monospace;
   --font-label: 'Silkscreen', 'Courier New', monospace;
@@ -39,8 +44,9 @@
   --gutter: clamp(16px, 4vw, 48px);
   --maxw: 1120px;
 
-  /* Stepped motion — the pixel-art signature. */
+  /* Stepped motion — the pixel-art signature. Nothing here glides. */
   --step: 120ms steps(4, end);
+  --step-slow: 320ms steps(6, end);
 }
 
 /* --- Reset ---------------------------------------------------------------- */
@@ -137,6 +143,32 @@ ul {
   border: 0;
 }
 
+/* --- Scroll reveal --------------------------------------------------------
+   Progressive enhancement: the hidden state only applies once the inline
+   bootstrap script has marked the document as scripted. With JS off or broken,
+   every section renders normally — the content is never gated behind an
+   animation.
+   ------------------------------------------------------------------------ */
+
+.js .px-reveal {
+  opacity: 0;
+  /* Whole pixels only, so the element steps into place instead of sliding. */
+  transform: translateY(12px);
+  transition: opacity var(--step-slow), transform var(--step-slow);
+}
+
+.js .px-reveal.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .px-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* --- Typography ----------------------------------------------------------- */
 
 .px-display {
@@ -152,7 +184,7 @@ ul {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--c-dim);
+  color: var(--c-faint);
   line-height: 1.6;
 }
 
@@ -163,6 +195,28 @@ ul {
 
 .px-prose {
   max-width: var(--measure);
+}
+
+/* A terminal caret. Blinks in hard steps — no fading. */
+.px-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.12em;
+  background: var(--c-accent);
+  vertical-align: text-bottom;
+  animation: px-blink 1.06s steps(1, end) infinite;
+}
+
+@keyframes px-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* --- The pixel frame ------------------------------------------------------
@@ -199,6 +253,23 @@ ul {
 
 .px-frame--flat {
   background: var(--c-bg);
+}
+
+/* Cards that lift a whole pixel on hover, then settle. */
+.px-frame--hover {
+  transition: transform var(--step), box-shadow var(--step);
+}
+
+.px-frame--hover:hover {
+  --frame: var(--c-line-hi);
+  transform: translate(calc(-1 * var(--px)), calc(-1 * var(--px)));
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame),
+    calc(-1 * var(--px)) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame),
+    var(--px2) var(--px3) 0 0 var(--c-shadow),
+    var(--px3) var(--px2) 0 0 var(--c-shadow);
 }
 
 /* --- Buttons -------------------------------------------------------------- */
@@ -249,7 +320,7 @@ ul {
 }
 
 .px-btn--primary:hover {
-  background: #ffc76b;
+  background: #6bf99c;
 }
 
 /* --- Chips ---------------------------------------------------------------- */
@@ -268,6 +339,11 @@ ul {
     0 var(--px) 0 0 var(--c-panel-2),
     calc(-1 * var(--px)) 0 0 0 var(--c-panel-2),
     var(--px) 0 0 0 var(--c-panel-2);
+  transition: color var(--step), background var(--step);
+}
+
+.px-chip:hover {
+  color: var(--c-bright);
 }
 
 .px-chip--accent {
@@ -310,14 +386,14 @@ ul {
 
 .px-section__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--px3);
   margin-bottom: var(--px4);
 }
 
 .px-section__index {
   font-family: var(--font-display);
-  /* Pixel faces lose their grid below ~16px; keep the index comfortably above it. */
+  /* Pixel faces lose their grid below ~16px; keep the index above it. */
   font-size: 20px;
   font-weight: 700;
   color: var(--c-accent);
@@ -331,7 +407,7 @@ ul {
   line-height: 1.1;
 }
 
-/* --- Scanlines -----------------------------------------------------------
+/* --- Scanlines + phosphor glow -------------------------------------------
    A deliberately faint CRT texture. Strong enough to feel like a screen,
    weak enough that it never competes with the text.
    ------------------------------------------------------------------------ */
@@ -343,8 +419,21 @@ ul {
   pointer-events: none;
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.022) 0 1px,
+    rgba(120, 255, 160, 0.028) 0 1px,
     transparent 1px 3px
+  );
+}
+
+/* Corner falloff, like light dropping off a curved tube. */
+.px-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
   );
 }
 

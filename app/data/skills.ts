@@ -58,6 +58,20 @@ export const capabilities: Capability[] = [
     tools: ['Vue.js', 'Nuxt.js', 'TypeScript', 'Pinia'],
   },
   {
+    id: 'ai-delivery',
+    name: 'AI-Assisted Delivery',
+    summary: 'AI as production tooling, not as a demo.',
+    description:
+      'I build AI into the delivery pipeline itself — generation, translation, migration, and review — and I have shipped the output to production for enterprise clients. The interesting part is not the model; it is the validation and fallback around it.',
+    evidence: [
+      'Engineered an automated CMS translation pipeline on Google Gemini, clearing a backlog across every international locale in days instead of quarters',
+      'Led a 40-page CMS redesign and migration that landed nine days early, with AI tooling used throughout the workflow',
+      'Use AI daily for scaffolding, refactoring, and review — with the output treated as a draft that still gets read',
+      'Design the guardrails around generated content: schema validation, human review gates, and deterministic fallbacks',
+    ],
+    tools: ['Google Gemini', 'Claude', 'LLM pipelines', 'Prompt design'],
+  },
+  {
     id: 'system-design',
     name: 'System Design',
     summary: 'Thinking in trade-offs rather than in solutions.',
@@ -93,5 +107,10 @@ export const stack: TechGroup[] = [
     id: 'platform',
     label: 'Platform',
     items: ['Azure', 'Algolia', 'GA4 / GTM', 'CI/CD', 'Linux'],
+  },
+  {
+    id: 'ai',
+    label: 'AI tooling',
+    items: ['Google Gemini', 'Claude', 'LLM pipelines', 'Prompt design'],
   },
 ]

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { projects } from '~/data/projects'
+import { folder } from '~/data/sprites'
 </script>
 
 <template>
@@ -8,6 +9,7 @@ import { projects } from '~/data/projects'
       <SectionHeading
         index="02"
         title="Selected Work"
+        :icon="folder"
         blurb="Three pieces of work I can talk through in detail — what the constraint was, what I chose, and what it actually changed."
       />
 
@@ -15,6 +17,7 @@ import { projects } from '~/data/projects'
         <ProjectCard
           v-for="(project, i) in projects"
           :key="project.id"
+          v-reveal="i"
           :project="project"
           :index="String(i + 1).padStart(2, '0')"
         />

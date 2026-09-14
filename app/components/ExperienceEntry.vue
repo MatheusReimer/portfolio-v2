@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { Role } from '~/data/experience'
-import { chevron } from '~/data/sprites'
+import { building, calendar, chevron, pin } from '~/data/sprites'
 
 defineProps<{ role: Role; isCurrent: boolean }>()
 </script>
 
 <template>
-  <article class="entry">
+  <article v-reveal class="entry">
     <div class="entry__rail" aria-hidden="true">
       <span class="entry__node" :class="{ 'entry__node--current': isCurrent }" />
       <span class="entry__line" />
@@ -15,12 +15,21 @@ defineProps<{ role: Role; isCurrent: boolean }>()
     <div class="entry__main">
       <header class="entry__head">
         <div>
-          <h3 class="entry__company px-display">{{ role.company }}</h3>
+          <h3 class="entry__company px-display">
+            <PixelSprite :sprite="building" :scale="2" class="entry__company-icon" />
+            {{ role.company }}
+          </h3>
           <p class="entry__role">{{ role.role }}</p>
         </div>
         <div class="entry__meta">
-          <p class="px-label entry__period">{{ role.period }}</p>
-          <p class="entry__loc">{{ role.location }}</p>
+          <p class="px-label entry__period">
+            <PixelSprite :sprite="calendar" :scale="2" class="entry__meta-icon" />
+            {{ role.period }}
+          </p>
+          <p class="entry__loc">
+            <PixelSprite :sprite="pin" :scale="2" class="entry__meta-icon" />
+            {{ role.location }}
+          </p>
         </div>
       </header>
 
@@ -95,7 +104,22 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 }
 
 .entry__company {
+  display: flex;
+  align-items: center;
+  gap: var(--px2);
   font-size: clamp(21px, 2.6vw, 27px);
+}
+
+.entry__company-icon {
+  color: var(--c-accent);
+  flex: none;
+}
+
+.entry__meta-icon {
+  display: inline-block;
+  color: var(--c-line-hi);
+  vertical-align: middle;
+  margin-right: 2px;
 }
 
 .entry__role {
@@ -112,10 +136,18 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 }
 
 .entry__period {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--px);
   color: var(--c-bright);
 }
 
 .entry__loc {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--px);
   font-size: 13px;
   color: var(--c-dim);
 }
@@ -164,6 +196,10 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 @media (max-width: 640px) {
   .entry__meta {
     text-align: left;
+  }
+  .entry__period,
+  .entry__loc {
+    justify-content: flex-start;
   }
 }
 </style>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { profile } from '~/data/profile'
+import { person } from '~/data/sprites'
 </script>
 
 <template>
   <section id="about" class="px-section about">
     <div class="px-shell">
-      <SectionHeading index="04" title="About" />
+      <SectionHeading index="04" title="About" :icon="person" />
 
       <div class="about__grid">
         <div class="about__story">

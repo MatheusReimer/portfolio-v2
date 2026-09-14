@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { experience } from '~/data/experience'
+import { briefcase } from '~/data/sprites'
 </script>
 
 <template>
@@ -8,6 +9,7 @@ import { experience } from '~/data/experience'
       <SectionHeading
         index="01"
         title="Experience"
+        :icon="briefcase"
         blurb="Five years, four roles, one direction — from keeping other people's systems alive to designing the architecture underneath them."
       />
 

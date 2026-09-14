@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { profile } from '~/data/profile'
-import { mail } from '~/data/sprites'
+import { mail, socialIcons, terminal } from '~/data/sprites'
 </script>
 
 <template>
   <section id="contact" class="px-section">
     <div class="px-shell">
-      <SectionHeading index="05" title="Get In Touch" />
+      <SectionHeading index="05" title="Get In Touch" :icon="terminal" />
 
-      <div class="contact px-frame px-frame--accent px-frame--raised">
+      <div v-reveal class="contact px-frame px-frame--accent px-frame--raised">
         <p class="contact__lead px-display">
           Open to senior front-end and full-stack roles.
         </p>
@@ -26,7 +26,10 @@ import { mail } from '~/data/sprites'
 
         <ul class="contact__socials">
           <li v-for="s in profile.socials" :key="s.id">
-            <span class="px-label contact__social-label">{{ s.label }}</span>
+            <span class="px-label contact__social-label">
+              <PixelSprite v-if="socialIcons[s.id]" :sprite="socialIcons[s.id]!" :scale="2" class="contact__social-icon" />
+              {{ s.label }}
+            </span>
             <ExternalLink :href="s.href">{{ s.handle }}</ExternalLink>
           </li>
         </ul>
@@ -67,7 +70,13 @@ import { mail } from '~/data/sprites'
 }
 
 .contact__social-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--px);
   color: var(--c-line-hi);
+}
+
+.contact__social-icon {
+  flex: none;
 }
 </style>

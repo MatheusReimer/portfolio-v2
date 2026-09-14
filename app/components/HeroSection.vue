@@ -1,6 +1,20 @@
 <script setup lang="ts">
 import { profile } from '~/data/profile'
-import { avatar, mail } from '~/data/sprites'
+import {
+  avatar,
+  avatarBlink,
+  bars,
+  bolt,
+  calendar,
+  diamond,
+  mail,
+  pin,
+  socialIcons,
+  terminal,
+} from '~/data/sprites'
+
+// One icon per stat, in the order the stats are declared.
+const statIcons = [bars, bolt, diamond, calendar]
 </script>
 
 <template>
@@ -8,7 +22,21 @@ import { avatar, mail } from '~/data/sprites'
     <div class="px-shell">
       <div class="hero__grid">
         <div class="hero__sprite px-frame px-frame--raised">
-          <PixelSprite :sprite="avatar" :scale="9" :label="`Pixel portrait of ${profile.name}`" />
+          <!-- Two frames stacked; CSS cross-fades them in hard steps so the
+               sprite blinks the way a game character idles. -->
+          <div class="sprite-stack">
+            <PixelSprite
+              :sprite="avatar"
+              :scale="9"
+              :label="`Pixel portrait of ${profile.name}`"
+              class="sprite-stack__frame sprite-stack__frame--open"
+            />
+            <PixelSprite
+              :sprite="avatarBlink"
+              :scale="9"
+              class="sprite-stack__frame sprite-stack__frame--blink"
+            />
+          </div>
         </div>
 
         <div class="hero__body">
@@ -20,12 +48,16 @@ import { avatar, mail } from '~/data/sprites'
           <h1 class="hero__name px-display">{{ profile.name }}</h1>
 
           <p class="hero__role">
+            <PixelSprite :sprite="terminal" :scale="2" class="hero__role-icon" />
             {{ profile.role }}
             <span class="hero__sep" aria-hidden="true">//</span>
+            <PixelSprite :sprite="pin" :scale="2" class="hero__role-icon" />
             <span class="hero__loc">{{ profile.location }}</span>
           </p>
 
-          <p class="hero__tagline px-display">{{ profile.tagline }}</p>
+          <p class="hero__tagline px-display">
+            {{ profile.tagline }}<span class="px-caret" aria-hidden="true" />
+          </p>
 
           <p class="hero__summary px-prose">{{ profile.summary }}</p>
 
@@ -42,6 +74,7 @@ import { avatar, mail } from '~/data/sprites'
               target="_blank"
               rel="noopener noreferrer"
             >
+              <PixelSprite v-if="socialIcons[s.id]" :sprite="socialIcons[s.id]!" :scale="2" />
               {{ s.label }}
             </a>
           </div>
@@ -49,8 +82,16 @@ import { avatar, mail } from '~/data/sprites'
       </div>
 
       <ul class="hero__stats">
-        <li v-for="stat in profile.stats" :key="stat.label" class="stat px-frame">
-          <p class="stat__value px-mono-num">{{ stat.value }}</p>
+        <li
+          v-for="(stat, i) in profile.stats"
+          :key="stat.label"
+          v-reveal="i"
+          class="stat px-frame px-frame--hover"
+        >
+          <div class="stat__top">
+            <PixelSprite :sprite="statIcons[i] ?? diamond" :scale="2" class="stat__icon" />
+            <p class="stat__value px-mono-num">{{ stat.value }}</p>
+          </div>
           <p class="px-label stat__label">{{ stat.label }}</p>
           <p class="stat__note">{{ stat.note }}</p>
         </li>
@@ -77,19 +118,72 @@ import { avatar, mail } from '~/data/sprites'
   background: var(--c-panel-2);
 }
 
+/* --- Blinking sprite ----------------------------------------------------- */
+
+.sprite-stack {
+  position: relative;
+}
+
+.sprite-stack__frame--blink {
+  position: absolute;
+  inset: 0;
+}
+
+/* Closed frame shows for a single 140ms beat every 5.2s. steps(1) means the
+   swap is instant — a sprite blinks, it does not fade. */
+.sprite-stack__frame--blink {
+  opacity: 0;
+  animation: sprite-blink 5.2s steps(1, end) infinite;
+}
+
+@keyframes sprite-blink {
+  0%,
+  96% {
+    opacity: 0;
+  }
+  96.01%,
+  98.5% {
+    opacity: 1;
+  }
+  98.51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sprite-stack__frame--blink {
+    display: none;
+  }
+}
+
+/* --- Copy ---------------------------------------------------------------- */
+
 .hero__status {
   display: flex;
   align-items: center;
   gap: var(--px2);
-  color: var(--c-ok);
+  color: var(--c-accent);
   margin-bottom: var(--px3);
 }
 
 .hero__dot {
   width: var(--px2);
   height: var(--px2);
-  background: var(--c-ok);
+  background: var(--c-accent);
   flex: none;
+  animation: px-pulse 2.4s steps(1, end) infinite;
+}
+
+@keyframes px-pulse {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  60.01%,
+  100% {
+    opacity: 0.25;
+  }
 }
 
 .hero__name {
@@ -98,12 +192,20 @@ import { avatar, mail } from '~/data/sprites'
 }
 
 .hero__role {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--px);
   font-family: var(--font-label);
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--c-accent);
   margin-bottom: var(--px4);
+}
+
+.hero__role-icon {
+  flex: none;
 }
 
 .hero__sep {
@@ -134,6 +236,8 @@ import { avatar, mail } from '~/data/sprites'
   gap: var(--px3);
 }
 
+/* --- Stats --------------------------------------------------------------- */
+
 .hero__stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -143,6 +247,17 @@ import { avatar, mail } from '~/data/sprites'
 
 .stat {
   padding: var(--px3) var(--px4);
+}
+
+.stat__top {
+  display: flex;
+  align-items: center;
+  gap: var(--px2);
+}
+
+.stat__icon {
+  color: var(--c-accent);
+  flex: none;
 }
 
 .stat__value {

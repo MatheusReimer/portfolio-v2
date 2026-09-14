@@ -11,6 +11,7 @@
     <SiteFooter />
 
     <div class="px-scanlines" aria-hidden="true" />
+    <div class="px-vignette" aria-hidden="true" />
   </div>
 </template>
 

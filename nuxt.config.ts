@@ -56,6 +56,15 @@ export default defineNuxtConfig({
         { name: 'twitter:description', content: profile.metaDescription },
       ],
       link: [{ rel: 'canonical', href: SITE_URL }],
+      script: [
+        {
+          // Marks the document as scripted before first paint. Scroll-reveal
+          // styles hang off this class, so if scripting is off or fails the
+          // content renders plainly rather than staying invisible.
+          innerHTML: "document.documentElement.classList.add('js')",
+          tagPosition: 'head',
+        },
+      ],
     },
   },
 

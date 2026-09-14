@@ -6,7 +6,7 @@ defineProps<{ project: Project; index: string }>()
 </script>
 
 <template>
-  <article class="card px-frame px-frame--raised">
+  <article class="card px-frame px-frame--raised px-frame--hover">
     <header class="card__head">
       <span class="card__index px-display" aria-hidden="true">{{ index }}</span>
       <div>

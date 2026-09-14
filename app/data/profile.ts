@@ -26,10 +26,10 @@ export const profile = {
   tagline: 'I build front-end platforms that stay fast under real traffic.',
 
   summary:
-    'Software engineer with five years building and maintaining scalable web applications for enterprise clients. I specialise in front-end architecture and performance with Nuxt.js and Vue.js, backed by a full-stack background in C#/.NET and Angular.',
+    'Software engineer with five years building and maintaining scalable web applications for enterprise clients. I specialise in front-end architecture and performance with Nuxt.js and Vue.js, backed by a full-stack background in C#/.NET and Angular. I use AI heavily in my day-to-day workflow — not as a novelty, but as production tooling I have shipped real systems with.',
 
   metaDescription:
-    'Software engineer specialising in front-end architecture and performance with Nuxt.js and Vue.js — platforms serving 400,000+ users and 35M+ requests monthly.',
+    'Software engineer specialising in front-end architecture, performance, and AI-assisted delivery with Nuxt.js and Vue.js — 400,000+ users, 35M+ requests monthly.',
 
   stats: [
     { label: 'Unique users / mo', value: '400K+', note: 'on the platform I architected' },

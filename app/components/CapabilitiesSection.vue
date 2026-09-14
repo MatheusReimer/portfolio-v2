@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { capabilities, stack } from '~/data/skills'
-import { chevron } from '~/data/sprites'
+import { capabilityIcons, chevron, gear } from '~/data/sprites'
 </script>
 
 <template>
@@ -9,17 +9,31 @@ import { chevron } from '~/data/sprites'
       <SectionHeading
         index="03"
         title="What I'm Good At"
-        blurb="Four areas I would happily be interviewed on, each with the work that backs it."
+        :icon="gear"
+        blurb="Five areas I would happily be interviewed on, each with the work that backs it."
       />
 
       <div class="cap__grid">
-        <article v-for="cap in capabilities" :key="cap.id" class="cap px-frame">
-          <h3 class="cap__name px-display">{{ cap.name }}</h3>
+        <article
+          v-for="(cap, i) in capabilities"
+          :key="cap.id"
+          v-reveal="i"
+          class="cap px-frame px-frame--hover"
+        >
+          <header class="cap__head">
+            <PixelSprite
+              v-if="capabilityIcons[cap.id]"
+              :sprite="capabilityIcons[cap.id]!"
+              :scale="3"
+              class="cap__icon"
+            />
+            <h3 class="cap__name px-display">{{ cap.name }}</h3>
+          </header>
           <p class="cap__summary">{{ cap.summary }}</p>
           <p class="cap__desc">{{ cap.description }}</p>
 
           <ul class="cap__evidence">
-            <li v-for="(item, i) in cap.evidence" :key="i">
+            <li v-for="(item, j) in cap.evidence" :key="j">
               <PixelSprite :sprite="chevron" :scale="2" class="cap__bullet" />
               <span>{{ item }}</span>
             </li>
@@ -67,6 +81,17 @@ import { chevron } from '~/data/sprites'
   display: flex;
   flex-direction: column;
   gap: var(--px2);
+}
+
+.cap__head {
+  display: flex;
+  align-items: center;
+  gap: var(--px2);
+}
+
+.cap__icon {
+  color: var(--c-accent);
+  flex: none;
 }
 
 .cap__name {

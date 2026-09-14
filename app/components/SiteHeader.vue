@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { terminal } from '~/data/sprites'
+
 const sections = [
   { id: 'experience', index: '01', label: 'Experience' },
   { id: 'work', index: '02', label: 'Work' },
@@ -12,7 +14,9 @@ const sections = [
   <header class="hdr">
     <div class="hdr__inner px-shell">
       <a href="#top" class="hdr__mark">
-        <span class="hdr__mark-box">MR</span>
+        <span class="hdr__mark-box">
+          <PixelSprite :sprite="terminal" :scale="2" />
+        </span>
         <span class="hdr__mark-name">Matheus Reimer</span>
       </a>
 
@@ -63,9 +67,6 @@ const sections = [
   height: 28px;
   background: var(--c-accent);
   color: var(--c-void);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
   box-shadow:
     0 calc(-1 * var(--px)) 0 0 var(--c-accent),
     0 var(--px) 0 0 var(--c-accent),
