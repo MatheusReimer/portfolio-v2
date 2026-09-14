@@ -18,21 +18,25 @@ const iconUri = computed(() => (icon.value ? spriteToDataUri(icon.value) : null)
 </script>
 
 <template>
-  <span class="tech" :class="{ 'tech--iconed': icon }">
+  <span class="tech">
+    <!-- The icon cell is always present, even when empty, so the labels in a
+         column line up whether or not a sprite exists for that technology. -->
     <span
-      v-if="iconUri"
       class="tech__icon"
-      :style="{ backgroundImage: `url(&quot;${iconUri}&quot;)` }"
+      :style="iconUri ? { backgroundImage: `url(&quot;${iconUri}&quot;)` } : undefined"
     />
-    {{ name }}
+    <span class="tech__name">{{ name }}</span>
   </span>
 </template>
 
 <style scoped>
 .tech {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: var(--px);
+  gap: var(--px2);
+  /* Fixed height and a fixed icon column: chips are a grid cell, not a blob
+     that changes size depending on whether it happens to have a sprite. */
+  min-height: 28px;
   padding: var(--px) var(--px2);
   background: var(--c-panel-2);
   color: var(--c-dim);
@@ -61,5 +65,11 @@ const iconUri = computed(() => (icon.value ? spriteToDataUri(icon.value) : null)
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
+}
+
+.tech__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

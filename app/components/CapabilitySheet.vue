@@ -264,8 +264,8 @@ const toggle = (id: string) => {
 }
 
 .row__tools {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
   gap: var(--px2);
   padding: var(--px3) var(--px2) var(--px2);
 }

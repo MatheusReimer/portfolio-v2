@@ -241,7 +241,7 @@ import { avatar, avatarBlink, mail, pin, socialIcons, terminal } from '~/data/sp
   /* The window casts an 8px shadow; leave room for it. */
   padding-right: var(--px2);
   padding-bottom: var(--px2);
-  max-width: 580px;
+  max-width: 660px;
 }
 
 @media (max-width: 720px) {

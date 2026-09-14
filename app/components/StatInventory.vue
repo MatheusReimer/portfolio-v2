@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { profile } from '~/data/profile'
-import { bars, bolt, calendar, chevron, diamond } from '~/data/sprites'
+import { bars, bolt, calendar, chevron, diamond, folder, layers } from '~/data/sprites'
 
 /**
  * The headline numbers as an RPG inventory.
@@ -15,7 +15,7 @@ import { bars, bolt, calendar, chevron, diamond } from '~/data/sprites'
  * DOM, so nothing is hidden from search engines or from a reader with
  * scripting off; the numbers themselves are visible in the slots regardless.
  */
-const icons = [bars, bolt, diamond, calendar]
+const icons = [bars, bolt, diamond, calendar, folder, layers]
 
 const active = ref(0)
 
@@ -72,6 +72,9 @@ const focusTab = (index: number) => {
         </p>
         <p class="readout__note">{{ stat.value }} — {{ stat.note }}</p>
         <p class="readout__detail">{{ stat.detail }}</p>
+        <p v-if="stat.href" class="readout__link">
+          <ExternalLink :href="stat.href">{{ stat.hrefLabel ?? 'See it live' }}</ExternalLink>
+        </p>
       </div>
     </div>
   </PixelWindow>
@@ -80,7 +83,7 @@ const focusTab = (index: number) => {
 <style scoped>
 .inv__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: var(--px2);
 }
 
@@ -140,7 +143,7 @@ const focusTab = (index: number) => {
   position: absolute;
   right: var(--px);
   bottom: 0;
-  font-size: clamp(13px, 1.5vw, 16px);
+  font-size: clamp(11px, 1.1vw, 14px);
   line-height: 1.2;
   color: var(--c-bright);
   text-shadow:
@@ -172,7 +175,7 @@ const focusTab = (index: number) => {
   border-top: var(--px) solid var(--c-line);
   /* Reserve room for the longest readout so selecting a slot does not jog the
      rest of the hero up and down. */
-  min-height: 150px;
+  min-height: 170px;
 }
 
 .readout__name {
@@ -203,7 +206,18 @@ const focusTab = (index: number) => {
   margin-top: var(--px2);
 }
 
-@media (max-width: 560px) {
+.readout__link {
+  margin-top: var(--px2);
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .inv__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
   .inv__grid {
     grid-template-columns: repeat(2, 1fr);
   }

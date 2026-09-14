@@ -14,6 +14,9 @@ export interface Stat {
   /** The context shown when the slot is selected. Every claim traceable to the
       experience timeline — this is the line someone quotes back in an interview. */
   detail: string
+  /** Public link that backs the claim up, where one exists. */
+  href?: string
+  hrefLabel?: string
 }
 
 export interface Language {
@@ -70,6 +73,26 @@ export const profile = {
       note: 'since 2021, professionally',
       detail:
         'Shipping since 2021: chatbot APIs in C# and .NET at Take Blip, freelance full-stack work, then platform engineering at Thinklogic. Before that, two years of IT support learning how systems fail.',
+    },
+    {
+      label: 'Pages migrated',
+      short: 'Migration',
+      value: '40',
+      note: 'in 21 days, nine days early',
+      detail:
+        'A CMS redesign and migration against a hard, non-negotiable deadline. I led a two-person team and used AI tooling throughout the workflow, and we finished nine days ahead of it.',
+      href: 'https://www.jndla.com/',
+      hrefLabel: 'jndla.com',
+    },
+    {
+      label: 'Locales cleared',
+      short: 'Locales',
+      value: 'ALL',
+      note: 'in days, not quarters',
+      detail:
+        'An automated CMS translation pipeline built on Google Gemini. It cleared a translation backlog across every international locale in days — work that had been measured in quarters.',
+      href: 'https://www.exemplars.health/',
+      hrefLabel: 'exemplars.health',
     },
   ] satisfies Stat[],
 

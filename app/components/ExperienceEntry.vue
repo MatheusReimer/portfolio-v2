@@ -158,8 +158,8 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 }
 
 .entry__stack {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
   gap: var(--px2);
   margin-bottom: var(--px4);
 }

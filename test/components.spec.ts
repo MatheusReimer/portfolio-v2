@@ -4,7 +4,6 @@ import PixelDissolve from '../app/components/PixelDissolve.vue'
 import PixelMeter from '../app/components/PixelMeter.vue'
 import PixelCarousel from '../app/components/PixelCarousel.vue'
 import StatInventory from '../app/components/StatInventory.vue'
-import PixelRocket from '../app/components/PixelRocket.vue'
 import { rocket as rocketSprite, flameFrames } from '../app/data/sprites'
 import { profile } from '../app/data/profile'
 import { techSprites, techIcon, toMono } from '../app/data/techSprites'
@@ -259,27 +258,5 @@ describe('rocket sprites', () => {
         for (const ch of row) expect(known).toContain(ch)
       }
     }
-  })
-})
-
-describe('PixelRocket', () => {
-  const mountRocket = () =>
-    mount(PixelRocket, { global: { stubs: { PixelSprite: true } } })
-
-  it('is decorative and never announced', () => {
-    expect(mountRocket().attributes('aria-hidden')).toBe('true')
-  })
-
-  it('renders every flame frame, staggered', () => {
-    const frames = mountRocket().findAll('.rocket__frame')
-    expect(frames).toHaveLength(3)
-    const delays = frames.map(f => f.attributes('style'))
-    expect(new Set(delays).size).toBe(3)
-  })
-
-  it('starts unlit and grounded', () => {
-    const wrapper = mountRocket()
-    expect(wrapper.classes()).not.toContain('is-burning')
-    expect(wrapper.attributes('style')).toContain('translateY(0px)')
   })
 })

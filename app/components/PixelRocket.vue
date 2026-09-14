@@ -1,90 +1,42 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { flameFrames, rocket } from '~/data/sprites'
-import { isThrusting, rocketOffset } from '~/utils/flight'
 
 /**
- * A booster that flies on scroll.
+ * The ship standing in the light, which launches on its own.
  *
- * Scrolling down launches it: the ship climbs and the engine lights. Scrolling
- * back up flies it home tail-first, engine still burning — a retro-propulsive
- * landing, which is why the flame points down in both directions.
+ * It holds on the pad, lights its engines, rumbles, then climbs out of frame —
+ * all on page load, with no scrolling required.
  *
- * Purely decorative and aria-hidden. If scripting never runs it simply sits on
- * its pad, so nothing here can strand or hide anything.
+ * Driven entirely by CSS animation rather than JavaScript. That is deliberate:
+ * no scroll listener to throttle, no animation frame to miss, nothing to
+ * initialise. It is decorative and aria-hidden, so if the animation never runs
+ * the only consequence is a ship parked on its pad.
  */
-const props = withDefaults(
+withDefaults(
   defineProps<{
-    /** How far the ship travels over the scroll range, in CSS pixels. */
-    distance?: number
+    /** Seconds before ignition, so the page settles before anything moves. */
+    delay?: number
   }>(),
-  { distance: 620 },
+  { delay: 1.1 },
 )
-
-const y = ref(0)
-const burning = ref(false)
-const enabled = ref(false)
-
-let frame = 0
-let lastScroll = 0
-let settle: ReturnType<typeof setTimeout> | null = null
-
-const update = () => {
-  frame = 0
-  const scrolled = window.scrollY
-  y.value = rocketOffset(scrolled, window.innerHeight, props.distance)
-
-  // The engine lights whenever the ship is actually moving, in either
-  // direction, and cuts out shortly after the scroll stops.
-  if (isThrusting(scrolled, lastScroll)) {
-    burning.value = true
-    if (settle) clearTimeout(settle)
-    settle = setTimeout(() => {
-      burning.value = false
-    }, 220)
-  }
-  lastScroll = scrolled
-}
-
-const onScroll = () => {
-  if (frame) return
-  frame = requestAnimationFrame(update)
-}
-
-onMounted(() => {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  enabled.value = true
-  lastScroll = window.scrollY
-  update()
-  window.addEventListener('scroll', onScroll, { passive: true })
-})
-
-onBeforeUnmount(() => {
-  if (frame) cancelAnimationFrame(frame)
-  if (settle) clearTimeout(settle)
-  window.removeEventListener('scroll', onScroll)
-})
 </script>
 
 <template>
-  <div
-    class="rocket"
-    :class="{ 'is-burning': burning, 'is-live': enabled }"
-    :style="{ transform: `translateY(${y}px)` }"
-    aria-hidden="true"
-  >
-    <div class="rocket__bob">
-      <PixelSprite :sprite="rocket" :scale="4" class="rocket__ship" />
+  <div class="rocket" :style="{ '--delay': `${delay}s` }" aria-hidden="true">
+    <div class="rocket__ascent">
+      <div class="rocket__shake">
+        <PixelSprite :sprite="rocket" :scale="4" class="rocket__ship" />
 
-      <div class="rocket__flame">
-        <PixelSprite
-          v-for="(f, i) in flameFrames"
-          :key="i"
-          :sprite="f"
-          :scale="4"
-          class="rocket__frame"
-          :style="{ animationDelay: `${i * 80}ms` }"
-        />
+        <div class="rocket__flame">
+          <PixelSprite
+            v-for="(f, i) in flameFrames"
+            :key="i"
+            :sprite="f"
+            :scale="4"
+            class="rocket__frame"
+            :style="{ animationDelay: `${i * 80}ms` }"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -93,45 +45,83 @@ onBeforeUnmount(() => {
 <style scoped>
 .rocket {
   position: absolute;
-  left: 56%;
-  bottom: 14%;
+  /* Sits where the scene's light falls. */
+  left: 68%;
+  bottom: 26%;
   z-index: 0;
   pointer-events: none;
-  /* Smooths the gap between scroll frames without un-stepping the motion. */
-  transition: transform 90ms steps(3, end);
 }
 
-/* Idle hover: the ship bobs a whole pixel, the way a sprite waits. */
-.rocket__bob {
-  animation: rocket-bob 2.6s steps(1, end) infinite;
+/* --- Ascent ---------------------------------------------------------------
+   Held on the pad, then accelerating: each keyframe interval covers more
+   ground than the last. steps() applies per interval, so the climb reads as a
+   sequence of discrete hops rather than a glide.
+   ------------------------------------------------------------------------ */
+
+.rocket__ascent {
+  animation: ascent 7s steps(14, end) var(--delay) forwards;
 }
 
-@keyframes rocket-bob {
+@keyframes ascent {
   0%,
-  49% {
+  14% {
     transform: translateY(0);
   }
-  50%,
+  38% {
+    transform: translateY(-90px);
+  }
+  66% {
+    transform: translateY(-420px);
+  }
   100% {
-    transform: translateY(4px);
+    transform: translateY(-1500px);
   }
 }
+
+/* Engine rumble in the second before it clears the pad. */
+.rocket__shake {
+  animation: rumble 110ms steps(2, end) var(--delay) 9;
+}
+
+@keyframes rumble {
+  0% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* --- Exhaust -------------------------------------------------------------- */
 
 .rocket__flame {
   position: relative;
   height: 32px;
   /* Tuck the exhaust up into the engine bell. */
   margin-top: -8px;
+  opacity: 0;
+  /* Lights just before the hold ends, and stays lit all the way out. */
+  animation: ignite 7s steps(1, end) var(--delay) forwards;
+}
+
+@keyframes ignite {
+  0%,
+  4% {
+    opacity: 0;
+  }
+  4.01%,
+  100% {
+    opacity: 1;
+  }
 }
 
 .rocket__frame {
   position: absolute;
   inset: 0;
   opacity: 0;
-}
-
-/* Frames cycle in hard steps only while the engine is lit. */
-.rocket.is-burning .rocket__frame {
   animation: rocket-flame 240ms steps(1, end) infinite;
 }
 
@@ -146,12 +136,17 @@ onBeforeUnmount(() => {
   }
 }
 
+/* Nothing launches unannounced for someone who asked for less motion. */
 @media (prefers-reduced-motion: reduce) {
-  .rocket__bob {
+  .rocket__ascent,
+  .rocket__shake,
+  .rocket__flame,
+  .rocket__frame {
     animation: none;
   }
+
   .rocket__flame {
-    display: none;
+    opacity: 0;
   }
 }
 

@@ -29,13 +29,45 @@ describe('profile', () => {
     expect(profile.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
   })
 
-  it('has four stats, each with a value, label, and note', () => {
-    expect(profile.stats).toHaveLength(4)
+  it('fills every inventory slot with a complete item', () => {
+    // Enough to fill the grid, few enough that the hero stays scannable.
+    expect(profile.stats.length).toBeGreaterThanOrEqual(4)
+    expect(profile.stats.length).toBeLessThanOrEqual(6)
+
     for (const stat of profile.stats) {
       expect(stat.value.trim()).not.toBe('')
       expect(stat.label.trim()).not.toBe('')
       expect(stat.note.trim()).not.toBe('')
+      expect(stat.short.trim()).not.toBe('')
+      expect(stat.detail.trim()).not.toBe('')
     }
+  })
+
+  it('keeps slot captions short enough for the slot', () => {
+    for (const stat of profile.stats) {
+      expect(stat.short.length).toBeLessThanOrEqual(12)
+      expect(stat.value.length).toBeLessThanOrEqual(6)
+    }
+  })
+
+  it('gives each slot detail real substance, not a restated note', () => {
+    for (const stat of profile.stats) {
+      expect(stat.detail.length).toBeGreaterThan(80)
+      expect(stat.detail).not.toBe(stat.note)
+    }
+  })
+
+  it('only backs a slot with an https link, and labels it', () => {
+    for (const stat of profile.stats) {
+      if (!stat.href) continue
+      expect(stat.href).toMatch(/^https:\/\//)
+      expect(stat.hrefLabel?.trim()).toBeTruthy()
+    }
+  })
+
+  it('uses a distinct short caption per slot', () => {
+    const shorts = profile.stats.map(s => s.short)
+    expect(new Set(shorts).size).toBe(shorts.length)
   })
 
   it('points every social link at https', () => {

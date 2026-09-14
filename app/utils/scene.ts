@@ -169,9 +169,10 @@ export function buildScene(seed = 20260914): Scene {
   }
 
   // The core: a bright slab standing on the horizon line.
-  far.push({ x: LIGHT_X - 5, y: HORIZON - 26, w: 10, h: 26, f: palette.glow, o: 0.55 })
-  far.push({ x: LIGHT_X - 3, y: HORIZON - 22, w: 6, h: 22, f: palette.beamHot, o: 0.75 })
-  far.push({ x: LIGHT_X - 1, y: HORIZON - 30, w: 2, h: 30, f: palette.hot })
+  // No hard core here any more: the ship itself is the bright object standing
+  // in this light, and it is a DOM sprite so it can launch. What stays is the
+  // glare it leaves behind.
+  far.push({ x: LIGHT_X - 5, y: HORIZON - 20, w: 10, h: 20, f: palette.glow, o: 0.4 })
 
   // --- Mid: the floor and the receding racks -----------------------------
   mid.push({ x: 0, y: HORIZON, w: W, h: H - HORIZON, f: palette.floor })
