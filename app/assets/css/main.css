@@ -1,0 +1,355 @@
+/* =============================================================================
+   Pixel design system
+   -----------------------------------------------------------------------------
+   Everything snaps to a 4px pixel unit. No border-radius, no blurred shadows,
+   no smooth easing — edges are hard and motion is stepped, the way a sprite
+   moves. Legibility is protected by keeping pixel type to headings and labels
+   and setting all running prose in Inter.
+   ========================================================================== */
+
+/* --- Tokens --------------------------------------------------------------- */
+
+:root {
+  /* The pixel unit. Every border, shadow, and gap is a multiple of this. */
+  --px: 4px;
+  --px2: 8px;
+  --px3: 12px;
+  --px4: 16px;
+
+  /* Limited palette — a console palette, not a gradient ramp. */
+  --c-void: #07090f;
+  --c-bg: #0d111c;
+  --c-panel: #141a29;
+  --c-panel-2: #1c2438;
+  --c-line: #2b3654;
+  --c-line-hi: #3d4c73;
+  --c-dim: #8492b8;
+  --c-text: #c2ccE4;
+  --c-bright: #eef3ff;
+  --c-accent: #ffb43f;
+  --c-accent-dim: #8a6021;
+  --c-ok: #5ddb9a;
+  --c-shadow: #05070c;
+
+  --font-display: 'Pixelify Sans', 'Courier New', monospace;
+  --font-label: 'Silkscreen', 'Courier New', monospace;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --measure: 68ch;
+  --gutter: clamp(16px, 4vw, 48px);
+  --maxw: 1120px;
+
+  /* Stepped motion — the pixel-art signature. */
+  --step: 120ms steps(4, end);
+}
+
+/* --- Reset ---------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--c-void);
+  /* Pixel art must never be resampled smoothly. */
+  image-rendering: pixelated;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--c-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+ul {
+  list-style: none;
+}
+
+/* --- Motion & accessibility ---------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: var(--px) solid var(--c-accent);
+  outline-offset: var(--px);
+}
+
+.px-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: var(--px2) var(--px3);
+  background: var(--c-accent);
+  color: var(--c-void);
+  font-family: var(--font-label);
+  font-size: 12px;
+}
+
+.px-skip:focus {
+  left: var(--px2);
+  top: var(--px2);
+}
+
+.px-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Typography ----------------------------------------------------------- */
+
+.px-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--c-bright);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+.px-label {
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-dim);
+  line-height: 1.6;
+}
+
+.px-mono-num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.px-prose {
+  max-width: var(--measure);
+}
+
+/* --- The pixel frame ------------------------------------------------------
+   Four offset box-shadow copies form a plus-shaped ring behind the element.
+   The union reads as a 4px border with cut corners — the classic 8-bit box —
+   without a single image or border-radius.
+   ------------------------------------------------------------------------ */
+
+.px-frame {
+  --frame: var(--c-line);
+  position: relative;
+  background: var(--c-panel);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame),
+    calc(-1 * var(--px)) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame);
+}
+
+/* Raised variant adds a stepped drop shadow that follows the cut corners. */
+.px-frame--raised {
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame),
+    calc(-1 * var(--px)) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame),
+    var(--px) var(--px2) 0 0 var(--c-shadow),
+    var(--px2) var(--px) 0 0 var(--c-shadow);
+}
+
+.px-frame--accent {
+  --frame: var(--c-accent);
+}
+
+.px-frame--flat {
+  background: var(--c-bg);
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+
+.px-btn {
+  --frame: var(--c-line-hi);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--px2);
+  padding: var(--px3) var(--px4);
+  background: var(--c-panel-2);
+  color: var(--c-bright);
+  font-family: var(--font-label);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame),
+    calc(-1 * var(--px)) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame),
+    var(--px) var(--px2) 0 0 var(--c-shadow),
+    var(--px2) var(--px) 0 0 var(--c-shadow);
+  transition: transform var(--step), box-shadow var(--step), background var(--step);
+}
+
+.px-btn:hover {
+  background: var(--c-line);
+}
+
+/* Press: the button drops into its own shadow, in whole pixels. */
+.px-btn:active {
+  transform: translate(var(--px), var(--px));
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--frame),
+    0 var(--px) 0 0 var(--frame),
+    calc(-1 * var(--px)) 0 0 0 var(--frame),
+    var(--px) 0 0 0 var(--frame);
+}
+
+.px-btn--primary {
+  --frame: var(--c-accent);
+  background: var(--c-accent);
+  color: var(--c-void);
+}
+
+.px-btn--primary:hover {
+  background: #ffc76b;
+}
+
+/* --- Chips ---------------------------------------------------------------- */
+
+.px-chip {
+  display: inline-block;
+  padding: var(--px) var(--px2);
+  background: var(--c-panel-2);
+  color: var(--c-dim);
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--c-panel-2),
+    0 var(--px) 0 0 var(--c-panel-2),
+    calc(-1 * var(--px)) 0 0 0 var(--c-panel-2),
+    var(--px) 0 0 0 var(--c-panel-2);
+}
+
+.px-chip--accent {
+  background: var(--c-accent-dim);
+  color: var(--c-bright);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--c-accent-dim),
+    0 var(--px) 0 0 var(--c-accent-dim),
+    calc(-1 * var(--px)) 0 0 0 var(--c-accent-dim),
+    var(--px) 0 0 0 var(--c-accent-dim);
+}
+
+/* --- Dividers ------------------------------------------------------------- */
+
+/* A rule drawn as literal pixels rather than a hairline. */
+.px-rule {
+  height: var(--px);
+  background-image: linear-gradient(
+    to right,
+    var(--c-line) 0 var(--px2),
+    transparent var(--px2) var(--px4)
+  );
+  background-size: var(--px4) var(--px);
+  background-repeat: repeat-x;
+  border: 0;
+}
+
+/* --- Layout --------------------------------------------------------------- */
+
+.px-shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.px-section {
+  padding-block: clamp(56px, 9vw, 112px);
+}
+
+.px-section__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--px3);
+  margin-bottom: var(--px4);
+}
+
+.px-section__index {
+  font-family: var(--font-display);
+  /* Pixel faces lose their grid below ~16px; keep the index comfortably above it. */
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-accent);
+  line-height: 1;
+}
+
+.px-section__title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  color: var(--c-bright);
+  line-height: 1.1;
+}
+
+/* --- Scanlines -----------------------------------------------------------
+   A deliberately faint CRT texture. Strong enough to feel like a screen,
+   weak enough that it never competes with the text.
+   ------------------------------------------------------------------------ */
+
+.px-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.022) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-scanlines {
+    display: none;
+  }
+}
