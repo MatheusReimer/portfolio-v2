@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { projects } from '~/data/projects'
 import { folder } from '~/data/sprites'
+
+const slideLabels = projects.map(p => p.title)
 </script>
 
 <template>
@@ -13,15 +15,20 @@ import { folder } from '~/data/sprites'
         blurb="Three pieces of work I can talk through in detail — what the constraint was, what I chose, and what it actually changed."
       />
 
-      <div class="work__grid">
-        <ProjectCard
-          v-for="(project, i) in projects"
-          :key="project.id"
-          v-reveal="i"
-          :project="project"
-          :index="String(i + 1).padStart(2, '0')"
-        />
-      </div>
+      <PixelCarousel
+        :count="projects.length"
+        label="selected work"
+        :slide-labels="slideLabels"
+      >
+        <template #default="{ index }">
+          <div class="work__slide">
+            <ProjectCard
+              :project="projects[index]!"
+              :index="String(index + 1).padStart(2, '0')"
+            />
+          </div>
+        </template>
+      </PixelCarousel>
     </div>
   </section>
 </template>
@@ -32,19 +39,9 @@ import { folder } from '~/data/sprites'
   border-block: var(--px) solid var(--c-line);
 }
 
-.work__grid {
-  display: grid;
-  /* Deliberately two-up at desktop: these cards carry four prose blocks each,
-     and a 320px track makes them unreadably narrow. */
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-  gap: clamp(20px, 3vw, 32px);
-  /* The raised frames cast 8px of shadow below the last row. */
-  padding-bottom: var(--px2);
-}
-
-@media (max-width: 520px) {
-  .work__grid {
-    grid-template-columns: 1fr;
-  }
+/* The raised card frame casts 8px of shadow and the carousel stage clips
+   overflow, so the slide carries its own inset to keep the shadow inside. */
+.work__slide {
+  padding: var(--px) var(--px3) var(--px3) var(--px);
 }
 </style>

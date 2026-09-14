@@ -37,7 +37,7 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 
       <ul class="entry__stack">
         <li v-for="tech in role.stack" :key="tech">
-          <span class="px-chip">{{ tech }}</span>
+          <TechChip :name="tech" />
         </li>
       </ul>
 

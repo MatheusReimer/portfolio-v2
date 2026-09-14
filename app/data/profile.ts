@@ -14,6 +14,8 @@ export interface Stat {
 export interface Language {
   name: string
   level: string
+  /** Filled segments out of 5, for the pixel meter. */
+  score: number
 }
 
 export const profile = {
@@ -62,8 +64,8 @@ export const profile = {
   ],
 
   languages: [
-    { name: 'Portuguese', level: 'Native' },
-    { name: 'English', level: 'Professional' },
+    { name: 'Portuguese', level: 'Native', score: 5 },
+    { name: 'English', level: 'Professional', score: 4 },
   ] satisfies Language[],
 
   email: 'matheusreimer1@gmail.com',

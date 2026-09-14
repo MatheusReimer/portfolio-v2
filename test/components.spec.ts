@@ -1,0 +1,147 @@
+import { describe, expect, it, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import PixelDissolve from '../app/components/PixelDissolve.vue'
+import PixelMeter from '../app/components/PixelMeter.vue'
+import PixelCarousel from '../app/components/PixelCarousel.vue'
+import { techSprites, techIcon } from '../app/data/techSprites'
+import type { Sprite } from '../app/data/sprites'
+
+describe('tech sprites', () => {
+  it.each(Object.entries(techSprites))('%s is a 16x16 rectangle', (_name, sprite: Sprite) => {
+    expect(sprite.rows).toHaveLength(16)
+    for (const row of sprite.rows) expect(row).toHaveLength(16)
+  })
+
+  it.each(Object.entries(techSprites))('%s palette has valid hex colours', (_name, sprite: Sprite) => {
+    for (const colour of Object.values(sprite.palette)) {
+      expect(colour).toMatch(/^#[0-9a-f]{6}$/i)
+    }
+  })
+
+  it.each(Object.entries(techSprites))('%s only uses characters its palette defines', (_name, sprite: Sprite) => {
+    const known = new Set([...Object.keys(sprite.palette), '.'])
+    for (const row of sprite.rows) {
+      for (const ch of row) expect(known).toContain(ch)
+    }
+  })
+
+  it('resolves tech names case- and whitespace-insensitively', () => {
+    expect(techIcon('Vue.js')).toBe(techSprites.vue)
+    expect(techIcon('  TYPESCRIPT ')).toBe(techSprites.typescript)
+    expect(techIcon('C#')).toBe(techSprites.csharp)
+  })
+
+  it('returns undefined for unmapped tech, so chips degrade to text', () => {
+    expect(techIcon('COBOL')).toBeUndefined()
+    expect(techIcon('')).toBeUndefined()
+  })
+})
+
+describe('PixelDissolve', () => {
+  it('renders one block per grid cell', () => {
+    const wrapper = mount(PixelDissolve, { props: { active: false, columns: 8, rows: 4 } })
+    expect(wrapper.findAll('.dissolve__blk')).toHaveLength(32)
+  })
+
+  it('is decorative, never announced', () => {
+    const wrapper = mount(PixelDissolve, { props: { active: false } })
+    expect(wrapper.attributes('aria-hidden')).toBe('true')
+  })
+
+  it('toggles the active class so the curtain fills', async () => {
+    const wrapper = mount(PixelDissolve, { props: { active: false, columns: 4, rows: 2 } })
+    expect(wrapper.classes()).not.toContain('is-active')
+    await wrapper.setProps({ active: true })
+    expect(wrapper.classes()).toContain('is-active')
+  })
+
+  it('gives every block a distinct scatter delay', () => {
+    const wrapper = mount(PixelDissolve, { props: { active: true, columns: 4, rows: 4 } })
+    const delays = wrapper.findAll('.dissolve__blk').map(b => b.attributes('style'))
+    expect(new Set(delays).size).toBe(16)
+  })
+
+  it('scatters deterministically, so SSR and client agree', () => {
+    const opts = { props: { active: true, columns: 6, rows: 4 } }
+    const a = mount(PixelDissolve, opts).html()
+    const b = mount(PixelDissolve, opts).html()
+    expect(a).toBe(b)
+  })
+})
+
+describe('PixelMeter', () => {
+  it('fills the requested number of segments', () => {
+    const wrapper = mount(PixelMeter, { props: { value: 4, label: 'English' } })
+    expect(wrapper.findAll('.meter__seg')).toHaveLength(5)
+    expect(wrapper.findAll('.meter__seg.is-on')).toHaveLength(4)
+  })
+
+  it('exposes meter semantics to assistive tech', () => {
+    const wrapper = mount(PixelMeter, { props: { value: 5, max: 5, label: 'Portuguese' } })
+    expect(wrapper.attributes('role')).toBe('meter')
+    expect(wrapper.attributes('aria-valuenow')).toBe('5')
+    expect(wrapper.attributes('aria-valuemax')).toBe('5')
+    expect(wrapper.attributes('aria-label')).toBe('Portuguese')
+  })
+})
+
+describe('PixelCarousel', () => {
+  const mountCarousel = () =>
+    mount(PixelCarousel, {
+      props: { count: 3, label: 'selected work', slideLabels: ['One', 'Two', 'Three'] },
+      slots: { default: '<p>slide</p>' },
+      global: { stubs: { PixelDissolve: true, PixelSprite: true } },
+    })
+
+  it('renders every slide, so nothing is hidden from search or no-JS readers', () => {
+    expect(mountCarousel().findAll('.carousel__slide')).toHaveLength(3)
+  })
+
+  it('marks only the active slide as visible and interactive', () => {
+    const slides = mountCarousel().findAll('.carousel__slide')
+    expect(slides[0]!.attributes('aria-hidden')).toBeUndefined()
+    expect(slides[1]!.attributes('aria-hidden')).toBe('true')
+    expect(slides[2]!.attributes('aria-hidden')).toBe('true')
+  })
+
+  it('advances and wraps around', async () => {
+    vi.useFakeTimers()
+    const wrapper = mountCarousel()
+
+    wrapper.vm.next()
+    await vi.advanceTimersByTimeAsync(400)
+    expect(wrapper.findAll('.carousel__dot')[1]!.classes()).toContain('is-on')
+
+    wrapper.vm.prev()
+    await vi.advanceTimersByTimeAsync(400)
+    wrapper.vm.prev()
+    await vi.advanceTimersByTimeAsync(400)
+    // Wrapped backwards from the first slide to the last.
+    expect(wrapper.findAll('.carousel__dot')[2]!.classes()).toContain('is-on')
+
+    vi.useRealTimers()
+  })
+
+  it('ignores a jump to the slide already showing', async () => {
+    vi.useFakeTimers()
+    const wrapper = mountCarousel()
+    wrapper.vm.goTo(0)
+    await vi.advanceTimersByTimeAsync(400)
+    expect(wrapper.findAll('.carousel__dot')[0]!.classes()).toContain('is-on')
+    vi.useRealTimers()
+  })
+
+  it('labels its controls', () => {
+    const wrapper = mountCarousel()
+    const labels = wrapper.findAll('button').map(b => b.attributes('aria-label'))
+    expect(labels).toContain('Previous selected work')
+    expect(labels).toContain('Next selected work')
+    expect(labels).toContain('One')
+  })
+
+  it('announces position politely', () => {
+    const live = mountCarousel().find('[aria-live="polite"]')
+    expect(live.exists()).toBe(true)
+    expect(live.text()).toBe('1 of 3')
+  })
+})

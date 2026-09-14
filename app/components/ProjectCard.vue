@@ -51,7 +51,7 @@ defineProps<{ project: Project; index: string }>()
 
     <ul class="card__tech">
       <li v-for="tech in project.tech" :key="tech">
-        <span class="px-chip">{{ tech }}</span>
+        <TechChip :name="tech" />
       </li>
     </ul>
   </article>

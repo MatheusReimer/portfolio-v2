@@ -41,7 +41,7 @@ import { capabilityIcons, chevron, gear } from '~/data/sprites'
 
           <ul class="cap__tools">
             <li v-for="tool in cap.tools" :key="tool">
-              <span class="px-chip">{{ tool }}</span>
+              <TechChip :name="tool" />
             </li>
           </ul>
         </article>
@@ -53,7 +53,7 @@ import { capabilityIcons, chevron, gear } from '~/data/sprites'
           <div v-for="group in stack" :key="group.id" class="stack__group">
             <dt class="px-label stack__label">{{ group.label }}</dt>
             <dd class="stack__items">
-              <span v-for="item in group.items" :key="item" class="px-chip">{{ item }}</span>
+              <TechChip v-for="item in group.items" :key="item" :name="item" />
             </dd>
           </div>
         </dl>

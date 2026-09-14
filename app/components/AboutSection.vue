@@ -29,7 +29,13 @@ import { person } from '~/data/sprites'
             <dl class="langs">
               <div v-for="lang in profile.languages" :key="lang.name" class="langs__row">
                 <dt class="langs__name">{{ lang.name }}</dt>
-                <dd class="langs__level px-label">{{ lang.level }}</dd>
+                <dd class="langs__level">
+                  <span class="px-label langs__tag">{{ lang.level }}</span>
+                  <PixelMeter
+                    :value="lang.score"
+                    :label="`${lang.name}: ${lang.level}`"
+                  />
+                </dd>
               </div>
             </dl>
           </div>
@@ -103,6 +109,12 @@ import { person } from '~/data/sprites'
 }
 
 .langs__level {
+  display: flex;
+  align-items: center;
+  gap: var(--px2);
+}
+
+.langs__tag {
   color: var(--c-dim);
 }
 
