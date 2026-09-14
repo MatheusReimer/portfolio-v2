@@ -10,11 +10,13 @@ import { mail, socialIcons, terminal } from '~/data/sprites'
 
       <div v-reveal class="contact px-frame px-frame--accent px-frame--raised">
         <p class="contact__lead px-display">
-          Open to senior front-end and full-stack roles.
+          Open to new opportunities.
         </p>
         <p class="contact__body px-prose">
-          If you are hiring for performance-critical front-end work — or you just
-          want to argue about prefetch strategies — the fastest way to reach me is email.
+          Front end, full stack, or something that fits neither label — I have
+          worked across enough of the stack to be useful in most of it. If you
+          have an interesting problem, or you just want to argue about prefetch
+          strategies, the fastest way to reach me is email.
         </p>
 
         <div class="contact__actions">

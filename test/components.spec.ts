@@ -4,7 +4,7 @@ import PixelDissolve from '../app/components/PixelDissolve.vue'
 import PixelMeter from '../app/components/PixelMeter.vue'
 import PixelCarousel from '../app/components/PixelCarousel.vue'
 import StatInventory from '../app/components/StatInventory.vue'
-import { rocket as rocketSprite, flameFrames } from '../app/data/sprites'
+import { rocket as rocketSprite, flameFrames, plane, car as carSprite, van } from '../app/data/sprites'
 import { profile } from '../app/data/profile'
 import { techSprites, techIcon, toMono } from '../app/data/techSprites'
 import type { Sprite } from '../app/data/sprites'
@@ -258,5 +258,38 @@ describe('rocket sprites', () => {
         for (const ch of row) expect(known).toContain(ch)
       }
     }
+  })
+})
+
+describe('traffic sprites', () => {
+  it.each([['plane', plane], ['car', carSprite], ['van', van]] as const)(
+    '%s is a strict rectangle using only its own palette',
+    (_name, sprite) => {
+      const w = sprite.rows[0]!.length
+      const known = new Set([...Object.keys(sprite.palette), '.'])
+      for (const row of sprite.rows) {
+        expect(row).toHaveLength(w)
+        for (const ch of row) expect(known).toContain(ch)
+      }
+    },
+  )
+
+  it('draws vehicle lights at opposite ends, so mirroring puts them right', () => {
+    // Drawn facing right: tail light at the left edge, headlight at the right.
+    // Westbound traffic is this sprite mirrored, which only works if the two
+    // are at opposite ends rather than centred.
+    for (const sprite of [carSprite, van]) {
+      const lit = sprite.rows.find(r => r.includes('H') && r.includes('L'))
+      expect(lit).toBeDefined()
+      expect(lit!.indexOf('L')).toBe(0)
+      expect(lit!.indexOf('H')).toBe(lit!.length - 1)
+    }
+  })
+
+  it('gives the airliner a lit cabin and a shaded underside', () => {
+    const flat = plane.rows.join('')
+    expect(flat).toContain('W')
+    expect(flat).toContain('D')
+    expect(plane.palette.W).toBeTruthy()
   })
 })

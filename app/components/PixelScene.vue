@@ -178,7 +178,10 @@ onBeforeUnmount(() => {
     linear-gradient(
       to bottom,
       color-mix(in srgb, var(--c-bg) 60%, transparent) 0%,
-      color-mix(in srgb, var(--c-bg) 25%, transparent) 45%,
+      color-mix(in srgb, var(--c-bg) 20%, transparent) 45%,
+      /* Held back through the street: reaching full opacity here washed the
+         traffic out completely. */
+      color-mix(in srgb, var(--c-bg) 46%, transparent) 88%,
       var(--c-bg) 100%
     );
 }

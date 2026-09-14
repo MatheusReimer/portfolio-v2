@@ -395,31 +395,68 @@ export const flameFrames: Sprite[] = [
   },
 ]
 
-/* --- Sky and street traffic ----------------------------------------------- */
+/* --- Sky and street traffic -----------------------------------------------
+   Drawn facing right. Westbound traffic is the same sprite mirrored, which is
+   why the lights are drawn at the correct ends rather than centred: mirroring
+   then puts the headlight at the front and the tail light at the back without
+   a second sprite.
+   ---------------------------------------------------------------------- */
 
-/** A side-on airliner. Flies high above the skyline, never through it. */
+/** A side-on airliner with a lit cabin. Flies high above the skyline. */
 export const plane: Sprite = {
   rows: [
-    '..........O.....',
-    '..........OO....',
-    '...OOOOOOOOOOO..',
-    '.OOOOOOOOOOOOOO.',
-    '...OOOOOOOOOOO..',
-    '......OOO.......',
+    '..TT............',
+    '..TTT...........',
+    '.BBBBBBBBBBBBBB.',
+    'BBWBWBWBWBWBWBB.',
+    '.DDDDDDDDDDDDDD.',
+    '...DDDDD........',
+    '....DDD.........',
     '................',
   ],
-  palette: { O: '#c9cff2' },
+  palette: {
+    B: '#d5dbf5', // fuselage, lit from above
+    D: '#7b83b8', // underside in shadow
+    W: '#ffc53d', // cabin windows
+    T: '#8a92c8', // tail fin
+  },
 }
 
-/** A car, small enough that two tones is all it can carry. */
+/** A saloon car. Ten pixels of it, so every one has to count. */
 export const car: Sprite = {
   rows: [
-    '..OOOO..',
-    '.OOOOOO.',
-    'OOOOOOOO',
-    '.W....W.',
+    '...OOOO...',
+    '..OWWWWO..',
+    'OOOOOOOOOO',
+    'LOOOOOOOOH',
+    '.T......T.',
   ],
-  palette: { O: '#8a92c8', W: '#3a4070' },
+  palette: {
+    O: '#a2aae0', // body, bright enough to hold against the asphalt
+    W: '#2a2f52', // glass
+    H: '#fff3c4', // headlight
+    L: '#ff7d6e', // tail light
+    T: '#1b1f38', // tyres
+  },
+}
+
+/** A van, for height variation in the lane. */
+export const van: Sprite = {
+  rows: [
+    '..OOOOOO..',
+    '..OOOOOOO.',
+    '..OOOOOWWO',
+    'OOOOOOOOOO',
+    'LOOOOOOOOH',
+    '.T......T.',
+  ],
+  palette: {
+    O: '#7f88bc',
+    W: '#2a2f52',
+    H: '#fff3c4',
+    L: '#ff7d6e',
+    T: '#1b1f38',
+  },
 }
 
 /* --- Shared run-length conversion -----------------------------------------
@@ -466,6 +503,7 @@ export const sprites = {
   rocket,
   plane,
   car,
+  van,
   avatarBlink,
   mail,
   arrow,

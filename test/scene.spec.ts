@@ -124,14 +124,4 @@ describe('skyline and flight safety', () => {
     expect(ratio).toBeGreaterThan(2)
     expect(ratio).toBeLessThan(2.6)
   })
-
-  it('leaves the launch lane clear of buildings', () => {
-    // The ship stands at x=170..184; nothing built may occupy that column.
-    const laneStart = 168
-    const laneEnd = 188
-    for (const b of buildings) {
-      const overlaps = b.x < laneEnd && b.x + b.w > laneStart
-      expect(overlaps).toBe(false)
-    }
-  })
 })

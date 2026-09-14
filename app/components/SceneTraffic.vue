@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { car, flameFrames, plane, rocket } from '~/data/sprites'
+import { car, plane, van } from '~/data/sprites'
 import { ROAD_Y, SKYLINE_CEILING } from '~/utils/scene'
 
 /**
- * Everything that moves inside the scene: aircraft crossing the sky, cars
- * along the street, and the ship that launches on load.
+ * Everything that moves inside the scene: aircraft crossing the sky and
+ * traffic along the street.
  *
  * All of it lives in the scene's own SVG coordinate space rather than as DOM
  * elements layered on top. That is what makes it part of the world — a sprite
@@ -16,25 +16,47 @@ import { ROAD_Y, SKYLINE_CEILING } from '~/utils/scene'
  * Planes cross open sky and never pass in front of, or into, a building.
  */
 
-/** Flight paths. Every y is comfortably clear of the tallest rooftop. */
-const flights = [
-  { y: 5, scale: 1, duration: 34, delay: 2, direction: 1 },
-  { y: 14, scale: 0.75, duration: 52, delay: 14, direction: -1 },
+interface Flight {
+  y: number
+  scale: number
+  duration: number
+  delay: number
+  direction: 1 | -1
+  /** Dimmer and smaller reads as further away. */
+  opacity: number
+}
+
+const flights: Flight[] = [
+  { y: 4, scale: 1, duration: 38, delay: 3, direction: 1, opacity: 1 },
+  { y: 12, scale: 0.75, duration: 58, delay: 17, direction: -1, opacity: 0.72 },
+  { y: 17, scale: 0.55, duration: 86, delay: 41, direction: 1, opacity: 0.45 },
 ]
 
-/** Street traffic, near lane travelling one way and far lane the other. */
-const traffic = [
-  { y: ROAD_Y - 4, scale: 0.8, duration: 19, delay: 0, direction: 1 },
-  { y: ROAD_Y - 4, scale: 0.8, duration: 23, delay: 9, direction: 1 },
-  { y: ROAD_Y + 5, scale: 0.8, duration: 26, delay: 4, direction: -1 },
-  { y: ROAD_Y + 5, scale: 0.8, duration: 31, delay: 17, direction: -1 },
+interface Vehicle {
+  sprite: typeof car
+  y: number
+  scale: number
+  duration: number
+  delay: number
+  direction: 1 | -1
+}
+
+/** Near lane runs east, far lane west. Mixed vehicles so the lane has rhythm. */
+const traffic: Vehicle[] = [
+  { sprite: car, y: ROAD_Y - 3, scale: 0.85, duration: 15, delay: 0, direction: 1 },
+  { sprite: van, y: ROAD_Y - 4, scale: 0.85, duration: 21, delay: 6, direction: 1 },
+  { sprite: car, y: ROAD_Y - 3, scale: 0.85, duration: 13, delay: 13, direction: 1 },
+  { sprite: car, y: ROAD_Y + 6, scale: 0.8, duration: 18, delay: 3, direction: -1 },
+  { sprite: van, y: ROAD_Y + 5, scale: 0.8, duration: 25, delay: 11, direction: -1 },
+  { sprite: car, y: ROAD_Y + 6, scale: 0.8, duration: 16, delay: 20, direction: -1 },
 ]
 
-// Fails loudly in development if a flight path is ever lowered into the skyline.
+/** Fails loudly in development if a flight path is lowered into the skyline. */
 if (import.meta.dev) {
   for (const f of flights) {
-    if (f.y + plane.rows.length > SKYLINE_CEILING) {
-      console.error('[SceneTraffic] flight path intersects the skyline', f)
+    const belly = f.y + plane.rows.length * f.scale
+    if (belly > SKYLINE_CEILING) {
+      console.error('[SceneTraffic] flight path intersects the skyline', f, belly)
     }
   }
 }
@@ -49,49 +71,56 @@ if (import.meta.dev) {
       class="traffic__path"
       :class="f.direction === 1 ? 'traffic__path--east' : 'traffic__path--west'"
       :style="{ animationDuration: `${f.duration}s`, animationDelay: `${f.delay}s` }"
+      :opacity="f.opacity"
     >
       <g :transform="f.direction === -1 ? 'translate(16 0) scale(-1 1)' : undefined">
+        <!-- Contrail: three fading marks streaming off the tail. -->
+        <rect :x="-4" :y="f.y + 3 * f.scale" width="3" height="1" fill="#8a92c8" opacity="0.28" />
+        <rect :x="-9" :y="f.y + 3 * f.scale" width="4" height="1" fill="#8a92c8" opacity="0.16" />
+        <rect :x="-16" :y="f.y + 3 * f.scale" width="5" height="1" fill="#8a92c8" opacity="0.08" />
+
         <PixelSpriteGroup :sprite="plane" :x="0" :y="f.y" :scale="f.scale" />
+
+        <!-- Nav light at the nose, blinking on its own beat. -->
+        <rect
+          class="traffic__nav"
+          :x="14 * f.scale"
+          :y="f.y + 3 * f.scale"
+          width="1"
+          height="1"
+          fill="#ff7d6e"
+          :style="{ animationDelay: `${i * 370}ms` }"
+        />
       </g>
     </g>
 
     <!-- Street traffic. -->
     <g
-      v-for="(c, i) in traffic"
+      v-for="(v, i) in traffic"
       :key="`c${i}`"
       class="traffic__path"
-      :class="c.direction === 1 ? 'traffic__path--east' : 'traffic__path--west'"
-      :style="{ animationDuration: `${c.duration}s`, animationDelay: `${c.delay}s` }"
+      :class="v.direction === 1 ? 'traffic__path--east' : 'traffic__path--west'"
+      :style="{ animationDuration: `${v.duration}s`, animationDelay: `${v.delay}s` }"
     >
-      <g :transform="c.direction === -1 ? 'translate(8 0) scale(-1 1)' : undefined">
-        <PixelSpriteGroup :sprite="car" :x="0" :y="c.y" :scale="c.scale" />
-      </g>
-    </g>
-
-    <!-- The ship, on its pad in the clear lane at x=178. -->
-    <g class="launch">
-      <g class="launch__shake">
-        <PixelSpriteGroup :sprite="rocket" :x="170" :y="32" :scale="0.85" />
-        <g class="launch__flame">
-          <PixelSpriteGroup
-            v-for="(f, i) in flameFrames"
-            :key="`f${i}`"
-            :sprite="f"
-            :x="170"
-            :y="51"
-            :scale="0.85"
-            class="launch__frame"
-            :style="{ animationDelay: `${i * 80}ms` }"
-          />
-        </g>
+      <g :transform="v.direction === -1 ? 'translate(10 0) scale(-1 1)' : undefined">
+        <PixelSpriteGroup :sprite="v.sprite" :x="0" :y="v.y" :scale="v.scale" />
+        <!-- Headlight spill on the asphalt ahead of the car. -->
+        <rect
+          :x="10 * v.scale"
+          :y="v.y + (v.sprite.rows.length - 2) * v.scale"
+          width="4"
+          height="1"
+          fill="#fff3c4"
+          opacity="0.14"
+        />
       </g>
     </g>
   </g>
 </template>
 
 <style scoped>
-/* Paths run right across the frame and off both edges. Linear, because an
-   aircraft at cruise does not ease. */
+/* Paths run right across the frame and off both edges. Linear, because neither
+   an aircraft at cruise nor a car at speed eases. */
 .traffic__path {
   animation-name: cross-east;
   animation-timing-function: linear;
@@ -104,107 +133,42 @@ if (import.meta.dev) {
 
 @keyframes cross-east {
   from {
-    transform: translateX(-30px);
+    transform: translateX(-32px);
   }
   to {
-    transform: translateX(290px);
+    transform: translateX(292px);
   }
 }
 
 @keyframes cross-west {
   from {
-    transform: translateX(290px);
+    transform: translateX(292px);
   }
   to {
-    transform: translateX(-30px);
+    transform: translateX(-32px);
   }
 }
 
-/* --- Launch ---------------------------------------------------------------
-   Holds on the pad, rumbles, then climbs out of frame. Distances are in scene
-   units, so the ship leaves the top of the scene at every viewport size.
-   ------------------------------------------------------------------------ */
-
-.launch {
-  animation: launch 7s steps(12, end) 1.1s forwards;
+/* Aircraft nav light: on for a beat, off for three. */
+.traffic__nav {
+  animation: nav-blink 1.8s steps(1, end) infinite;
 }
 
-@keyframes launch {
+@keyframes nav-blink {
   0%,
-  14% {
-    transform: translateY(0);
-  }
-  38% {
-    transform: translateY(-14px);
-  }
-  66% {
-    transform: translateY(-58px);
-  }
-  100% {
-    transform: translateY(-190px);
-  }
-}
-
-.launch__shake {
-  animation: launch-rumble 110ms steps(2, end) 1.1s 9;
-}
-
-@keyframes launch-rumble {
-  0% {
-    transform: translateX(-0.6px);
-  }
-  50% {
-    transform: translateX(0.6px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.launch__flame {
-  opacity: 0;
-  animation: launch-ignite 7s steps(1, end) 1.1s forwards;
-}
-
-@keyframes launch-ignite {
-  0%,
-  4% {
-    opacity: 0;
-  }
-  4.01%,
-  100% {
+  16% {
     opacity: 1;
   }
-}
-
-.launch__frame {
-  opacity: 0;
-  animation: launch-flame 240ms steps(1, end) infinite;
-}
-
-@keyframes launch-flame {
-  0%,
-  33.3% {
-    opacity: 1;
-  }
-  33.4%,
+  16.01%,
   100% {
     opacity: 0;
   }
 }
 
-/* Nothing moves for someone who asked for less motion. */
 @media (prefers-reduced-motion: reduce) {
   .traffic__path,
-  .launch,
-  .launch__shake,
-  .launch__flame,
-  .launch__frame {
+  .traffic__nav {
     animation: none;
-  }
-
-  .launch__flame {
-    opacity: 0;
   }
 }
 </style>

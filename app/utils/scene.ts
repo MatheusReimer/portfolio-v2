@@ -172,30 +172,23 @@ export function buildScene(seed = 20260914): Scene {
     })
   }
 
-  // The shaft: a cone of light spilling upward from the core. Stacked bands
-  // widening as they rise, each a hard step fainter — light as a staircase,
-  // which is the only way it can look right on a pixel grid.
-  for (let i = 0; i < 26; i++) {
-    const y = HORIZON - 3 - i * 3
-    if (y < -3) break
-    const half = Math.round(4 + i * 1.7)
+  // A low wash of light over the middle distance — city glow, not a beam.
+  // There is nothing standing here any more for a shaft to come from.
+  for (let i = 0; i < 12; i++) {
+    const y = HORIZON - 2 - i * 2
+    if (y < 0) break
+    const half = Math.round(10 + i * 2.4)
     far.push({
       x: LIGHT_X - half,
       y,
       w: half * 2,
-      h: 3,
+      h: 2,
       f: palette.glow,
-      o: Math.max(0.03, 0.3 * (1 - i / 26)),
+      o: Math.max(0.02, 0.13 * (1 - i / 12)),
     })
   }
 
-  // The core: a bright slab standing on the horizon line.
-  // No hard core here any more: the ship itself is the bright object standing
-  // in this light, and it is a DOM sprite so it can launch. What stays is the
-  // glare it leaves behind.
-  far.push({ x: LIGHT_X - 5, y: HORIZON - 16, w: 10, h: 16, f: palette.glow, o: 0.4 })
-
-  // --- Mid: the floor and the receding racks -----------------------------
+  // --- Mid: the street and the buildings ---------------------------------
   mid.push({ x: 0, y: HORIZON, w: W, h: H - HORIZON, f: palette.floor })
 
   // The pool of light where the shaft meets the floor: a trapezoid widening

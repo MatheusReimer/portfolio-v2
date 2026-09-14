@@ -30,7 +30,7 @@ export const profile = {
   name: 'Matheus Reimer',
   role: 'Software Engineer',
   location: 'Blumenau, Santa Catarina, Brazil',
-  availability: 'Open to senior front-end and full-stack roles',
+  availability: 'Open to new opportunities',
 
   // One-line value proposition used in the hero.
   tagline: 'I build front-end platforms that stay fast under real traffic.',
@@ -127,7 +127,9 @@ export const profile = {
 
   languages: [
     { name: 'Portuguese', level: 'Native', score: 5 },
-    { name: 'English', level: 'Professional', score: 4 },
+    { name: 'English', level: 'Native', score: 5 },
+    { name: 'German', level: 'Intermediate', score: 3 },
+    { name: 'Italian', level: 'Basic', score: 2 },
   ] satisfies Language[],
 
   email: 'matheusreimer1@gmail.com',
