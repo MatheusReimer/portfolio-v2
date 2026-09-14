@@ -22,41 +22,46 @@ const props = withDefaults(
 )
 
 /**
- * Deterministic shuffle. A seeded LCG rather than Math.random so the server
- * and client render identical markup and hydration stays quiet.
+ * Ordered dither, not random scatter.
+ *
+ * A Bayer matrix is what a machine reaches for when it has to approximate a
+ * continuous image with a handful of discrete cells, and it is what a
+ * progressively-loading image looked like when that was still a thing you
+ * watched happen. Clearing in this order reads as a picture resolving itself —
+ * a process — where a random shuffle just reads as noise.
+ *
+ * It is also inherently deterministic, so server and client agree for free.
  */
-const order = computed(() => {
-  const count = props.columns * props.rows
-  const indices = Array.from({ length: count }, (_, i) => i)
+const BAYER_8 = [
+  [0, 32, 8, 40, 2, 34, 10, 42],
+  [48, 16, 56, 24, 50, 18, 58, 26],
+  [12, 44, 4, 36, 14, 46, 6, 38],
+  [60, 28, 52, 20, 62, 30, 54, 22],
+  [3, 35, 11, 43, 1, 33, 9, 41],
+  [51, 19, 59, 27, 49, 17, 57, 25],
+  [15, 47, 7, 39, 13, 45, 5, 37],
+  [63, 31, 55, 23, 61, 29, 53, 21],
+]
 
-  let seed = 1337
-  for (let i = count - 1; i > 0; i--) {
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff
-    const j = seed % (i + 1)
-    const a = indices[i]!
-    indices[i] = indices[j]!
-    indices[j] = a
+/** Each cell's place in the dither order, 0 to 1. */
+const ranks = computed(() => {
+  const out: number[] = []
+  for (let y = 0; y < props.rows; y++) {
+    for (let x = 0; x < props.columns; x++) {
+      out.push((BAYER_8[y % 8]![x % 8]! + 0.5) / 64)
+    }
   }
-
-  // position -> its slot in the scatter order
-  const slot = new Array<number>(count)
-  indices.forEach((cell, position) => {
-    slot[cell] = position
-  })
-  return slot
+  return out
 })
 
 const blocks = computed(() =>
-  order.value.map((slot, i) => {
-    const step = props.duration / (props.columns * props.rows)
-    return {
-      key: i,
-      // Entering scatters one way, leaving unwinds the other, so the curtain
-      // never looks like it is simply replaying itself.
-      enter: `${(slot * step).toFixed(1)}ms`,
-      exit: `${((props.columns * props.rows - slot) * step).toFixed(1)}ms`,
-    }
-  }),
+  ranks.value.map((rank, i) => ({
+    key: i,
+    // Covering runs the dither one way and clearing unwinds it the other, so
+    // the curtain never looks like it is simply replaying itself.
+    enter: `${(rank * props.duration).toFixed(1)}ms`,
+    exit: `${((1 - rank) * props.duration).toFixed(1)}ms`,
+  })),
 )
 </script>
 

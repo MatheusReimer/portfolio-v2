@@ -25,15 +25,22 @@ class FakeObserver {
     this.disconnected = true
   }
 
-  fire(isIntersecting = true) {
-    this.callback([{ isIntersecting } as IntersectionObserverEntry], this as unknown as IntersectionObserver)
+  fire(isIntersecting: boolean) {
+    this.callback(
+      [{ isIntersecting } as IntersectionObserverEntry],
+      this as unknown as IntersectionObserver,
+    )
   }
 }
 
-/** Places the component below the fold unless told otherwise. */
+/** Places the component where we want it relative to the fold. */
 function stubRect(top: number, bottom: number) {
   Element.prototype.getBoundingClientRect = vi.fn(
-    () => ({ top, bottom, left: 0, right: 0, width: 800, height: bottom - top, x: 0, y: top, toJSON: () => ({}) }) as DOMRect,
+    () =>
+      ({
+        top, bottom, left: 0, right: 0, width: 800, height: bottom - top, x: 0, y: top,
+        toJSON: () => ({}),
+      }) as DOMRect,
   )
 }
 
@@ -51,6 +58,9 @@ const mountBuild = () =>
     },
   })
 
+const near = () => FakeObserver.instances[0]!
+const visible = () => FakeObserver.instances[1]!
+
 let realRect: typeof Element.prototype.getBoundingClientRect
 
 beforeEach(() => {
@@ -59,7 +69,7 @@ beforeEach(() => {
   vi.stubGlobal('IntersectionObserver', FakeObserver)
   vi.stubGlobal('matchMedia', () => ({ matches: false }))
   window.innerHeight = 800
-  stubRect(1600, 2400)
+  stubRect(1600, 2400) // below the fold
 })
 
 afterEach(() => {
@@ -75,54 +85,86 @@ describe('PixelBuild', () => {
 
   it('renders no curtain until an observer has actually fired', () => {
     // The critical property: if observers never run, nothing is ever covered.
-    const wrapper = mountBuild()
-    expect(wrapper.find('.curtain').exists()).toBe(false)
+    expect(mountBuild().find('.curtain').exists()).toBe(false)
   })
 
-  it('never covers a section that is already on screen', async () => {
+  it('never covers a section that is on screen', async () => {
     stubRect(100, 700)
     const wrapper = mountBuild()
-    expect(FakeObserver.instances).toHaveLength(0)
+    near().fire(true)
+    visible().fire(true)
+    await wrapper.vm.$nextTick()
     expect(wrapper.find('.curtain').exists()).toBe(false)
   })
 
-  it('covers once armed, while the section is still below the fold', async () => {
+  it('covers once near, while still off screen', async () => {
     const wrapper = mountBuild()
-    FakeObserver.instances[0]!.fire()
+    near().fire(true)
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.curtain').exists()).toBe(true)
     expect(wrapper.find('.curtain').attributes('data-active')).toBe('true')
   })
 
-  it('arms from below the fold, not once the section is already showing', () => {
+  it('arms from beyond the fold in both directions', () => {
     mountBuild()
-    expect(FakeObserver.instances[0]!.options?.rootMargin).toContain('380px')
+    expect(near().options?.rootMargin).toBe('420px 0px 420px 0px')
   })
 
-  it('clears the curtain when the section arrives', async () => {
-    vi.useFakeTimers()
+  it('clears as the section arrives', async () => {
     const wrapper = mountBuild()
-    FakeObserver.instances[0]!.fire()
+    near().fire(true)
     await wrapper.vm.$nextTick()
 
-    FakeObserver.instances[1]!.fire()
+    stubRect(200, 900)
+    visible().fire(true)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.curtain').attributes('data-active')).toBe('false')
+  })
+
+  it('covers again when the section leaves, so scrolling back rebuilds it', async () => {
+    const wrapper = mountBuild()
+    near().fire(true)
+    stubRect(200, 900)
+    visible().fire(true)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.curtain').attributes('data-active')).toBe('false')
 
-    await vi.advanceTimersByTimeAsync(1200)
-    expect(wrapper.find('.curtain').exists()).toBe(false)
+    // Scrolled past: off screen again.
+    stubRect(-1600, -900)
+    visible().fire(false)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.curtain').attributes('data-active')).toBe('true')
+
+    // And back into view: builds a second time.
+    stubRect(200, 900)
+    visible().fire(true)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.curtain').attributes('data-active')).toBe('false')
   })
 
-  it('clears anyway if the build trigger never fires', async () => {
-    vi.useFakeTimers()
+  it('destroys the curtain once the section is far away', async () => {
     const wrapper = mountBuild()
-    FakeObserver.instances[0]!.fire()
+    near().fire(true)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.curtain').exists()).toBe(true)
 
-    // Failsafe: content is never left behind a curtain that stopped animating.
-    await vi.advanceTimersByTimeAsync(8000)
+    near().fire(false)
+    await wrapper.vm.$nextTick()
     expect(wrapper.find('.curtain').exists()).toBe(false)
+  })
+
+  it('watchdog uncovers a section that ends up visible while covered', async () => {
+    vi.useFakeTimers()
+    const wrapper = mountBuild()
+    near().fire(true)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.curtain').attributes('data-active')).toBe('true')
+
+    // The section becomes visible without the observer reporting it — the only
+    // way this component could strand content behind a curtain.
+    stubRect(100, 700)
+    await vi.advanceTimersByTimeAsync(2000)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.curtain').attributes('data-active')).toBe('false')
   })
 
   it('does nothing at all under reduced motion', () => {
@@ -135,7 +177,6 @@ describe('PixelBuild', () => {
 
   it('tears its observers down on unmount', () => {
     const wrapper = mountBuild()
-    FakeObserver.instances[0]!.fire()
     wrapper.unmount()
     expect(FakeObserver.instances.every(o => o.disconnected)).toBe(true)
   })

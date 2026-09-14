@@ -7,8 +7,6 @@ const slideLabels = projects.map(p => p.title)
 
 <template>
   <section id="work" class="px-section work">
-    <PixelScene variant="quiet" :intensity="0.5" />
-
     <div class="px-shell work__content">
       <SectionHeading
         index="02"
@@ -41,6 +39,41 @@ const slideLabels = projects.map(p => p.title)
   isolation: isolate;
   background: var(--c-void);
   border-block: var(--px) solid var(--c-line);
+}
+
+/* Not the city again — this section is a workbench, so it gets drafting paper.
+   A hard-edged pixel grid with a heavier rule every fourth line, drawn in
+   gradients so it costs nothing in the DOM. */
+.work::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      color-mix(in srgb, var(--c-line) 62%, transparent) 0 1px,
+      transparent 1px 64px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--c-line) 62%, transparent) 0 1px,
+      transparent 1px 64px
+    ),
+    repeating-linear-gradient(
+      to right,
+      color-mix(in srgb, var(--c-line) 30%, transparent) 0 1px,
+      transparent 1px 16px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--c-line) 30%, transparent) 0 1px,
+      transparent 1px 16px
+    );
+  /* Fades out at the edges so the grid never fights the frame. */
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 78%);
+  opacity: 0.55;
 }
 
 .work__content {

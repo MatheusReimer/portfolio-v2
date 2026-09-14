@@ -2,59 +2,88 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 /**
- * Builds a section out of pixels as it scrolls into view.
+ * Builds a section out of pixels every time it scrolls into view.
  *
- * A curtain of blocks covers the section while it is still below the fold,
- * then clears one block at a time in a scattered order as the section arrives —
- * so the content appears to assemble itself rather than fade in.
+ * A curtain of blocks covers the section while it is off screen, then clears
+ * in Bayer dither order as the section arrives — the way a progressive image
+ * used to resolve. Leave the section and it covers again, so scrolling back up
+ * rebuilds it rather than revealing something that already happened.
  *
  * The safety property matters more than the effect, and drives the design:
  *
- *  - Nothing is ever covered unless an IntersectionObserver has already fired.
- *    If observers do not run at all — a hidden tab, a throttled renderer, no
- *    scripting — no curtain is ever created and every section renders plainly.
- *  - A section already on screen at mount is never covered. The user does not
- *    watch content they can already read get hidden and then rebuilt.
- *  - A failsafe clears the curtain regardless after a few seconds.
+ *  - Nothing is covered unless an IntersectionObserver has reported the
+ *    section off screen. If observers never run — a hidden tab, a throttled
+ *    renderer, no scripting — no curtain is created and every section renders
+ *    plainly.
+ *  - A section on screen is never covered, so content is never hidden out from
+ *    under a reader.
+ *  - A watchdog clears the curtain if a covered section ends up visible
+ *    anyway, which is the only route by which this could strand content.
  *
- * The curtain is also created lazily and destroyed once it has cleared, so at
- * most a section or two carries the extra nodes at any moment.
+ * Curtains are created only near the viewport and destroyed once the section is
+ * far away, so at most a couple of them carry nodes at a time.
  */
-const props = withDefaults(
+withDefaults(
   defineProps<{
     columns?: number
     rows?: number
     /** How long the full sweep takes, in ms. */
     duration?: number
   }>(),
-  { columns: 11, rows: 7, duration: 620 },
+  // Coarse on purpose: big cells read as pixels resolving, where a fine grid
+  // just reads as a fade.
+  { columns: 10, rows: 6, duration: 900 },
 )
 
-/** Nothing stays covered longer than this, whatever happens. */
-const FAILSAFE_MS = 6000
+const WATCHDOG_MS = 1600
 
 const root = ref<HTMLElement | null>(null)
-/** The curtain only exists between arming and clearing. */
+/** The curtain only exists while the section is near the viewport. */
 const mounted = ref(false)
 const covered = ref(false)
 
-let armObserver: IntersectionObserver | null = null
-let buildObserver: IntersectionObserver | null = null
-let failsafe: ReturnType<typeof setTimeout> | null = null
-let clearTimer: ReturnType<typeof setTimeout> | null = null
+let nearObserver: IntersectionObserver | null = null
+let visibleObserver: IntersectionObserver | null = null
+let watchdog: ReturnType<typeof setInterval> | null = null
 
-const finish = () => {
-  covered.value = false
-  if (clearTimer) clearTimeout(clearTimer)
-  clearTimer = setTimeout(() => {
-    mounted.value = false
-  }, props.duration + 120)
+const isOnScreen = () => {
+  const el = root.value
+  if (!el) return false
+  const r = el.getBoundingClientRect()
+  return r.top < window.innerHeight && r.bottom > 0
+}
+
+const stopWatchdog = () => {
+  if (watchdog) clearInterval(watchdog)
+  watchdog = null
+}
+
+/**
+ * The only way this component could hide content is a curtain that stays up
+ * while its section is visible. A blanket timer would clear off-screen
+ * curtains too and kill the effect, so this checks for exactly that condition
+ * instead.
+ */
+const startWatchdog = () => {
+  stopWatchdog()
+  watchdog = setInterval(() => {
+    if (covered.value && isOnScreen()) {
+      covered.value = false
+      stopWatchdog()
+    }
+  }, WATCHDOG_MS)
+}
+
+const cover = () => {
+  if (isOnScreen()) return
+  mounted.value = true
+  covered.value = true
+  startWatchdog()
 }
 
 const build = () => {
-  if (!mounted.value) return
-  buildObserver?.disconnect()
-  finish()
+  covered.value = false
+  stopWatchdog()
 }
 
 onMounted(() => {
@@ -63,41 +92,41 @@ onMounted(() => {
   if (typeof IntersectionObserver === 'undefined') return
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-  // Already on screen: leave it alone.
-  const rect = el.getBoundingClientRect()
-  if (rect.top < window.innerHeight && rect.bottom > 0) return
-
-  armObserver = new IntersectionObserver(
+  // Near: owns whether the curtain exists at all.
+  nearObserver = new IntersectionObserver(
     (entries) => {
-      if (!entries.some(e => e.isIntersecting)) return
-      armObserver?.disconnect()
-
-      // Cover while still below the fold, so the curtain is never seen
-      // appearing over content the reader was already looking at.
-      mounted.value = true
-      covered.value = true
-      failsafe = setTimeout(finish, FAILSAFE_MS)
-
-      buildObserver = new IntersectionObserver(
-        (inner) => {
-          if (inner.some(e => e.isIntersecting)) build()
-        },
-        { threshold: 0.06 },
-      )
-      buildObserver.observe(el)
+      const near = entries.some(e => e.isIntersecting)
+      if (near) {
+        if (!mounted.value) cover()
+      }
+      else {
+        mounted.value = false
+        covered.value = false
+        stopWatchdog()
+      }
     },
-    // Fires while the section is still a screenful below.
-    { rootMargin: '0px 0px 380px 0px' },
+    { rootMargin: '420px 0px 420px 0px' },
   )
 
-  armObserver.observe(el)
+  // Visible: owns whether it is drawn or cleared, in both directions.
+  visibleObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) build()
+        else cover()
+      }
+    },
+    { threshold: 0.04 },
+  )
+
+  nearObserver.observe(el)
+  visibleObserver.observe(el)
 })
 
 onBeforeUnmount(() => {
-  armObserver?.disconnect()
-  buildObserver?.disconnect()
-  if (failsafe) clearTimeout(failsafe)
-  if (clearTimer) clearTimeout(clearTimer)
+  nearObserver?.disconnect()
+  visibleObserver?.disconnect()
+  stopWatchdog()
 })
 </script>
 
