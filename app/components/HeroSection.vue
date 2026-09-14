@@ -1,20 +1,6 @@
 <script setup lang="ts">
 import { profile } from '~/data/profile'
-import {
-  avatar,
-  avatarBlink,
-  bars,
-  bolt,
-  calendar,
-  diamond,
-  mail,
-  pin,
-  socialIcons,
-  terminal,
-} from '~/data/sprites'
-
-// One icon per stat, in the order the stats are declared.
-const statIcons = [bars, bolt, diamond, calendar]
+import { avatar, avatarBlink, mail, pin, socialIcons, terminal } from '~/data/sprites'
 </script>
 
 <template>
@@ -83,18 +69,10 @@ const statIcons = [bars, bolt, diamond, calendar]
         </div>
       </div>
 
-      <ul class="hero__stats">
-        <li v-for="(stat, i) in profile.stats" :key="stat.label" v-reveal="i">
-          <PixelWindow
-            :title="stat.label"
-            :icon="statIcons[i] ?? diamond"
-            :emphasis="i === 0"
-          >
-            <p class="stat__value px-mono-num">{{ stat.value }}</p>
-            <p class="stat__note">{{ stat.note }}</p>
-          </PixelWindow>
-        </li>
-      </ul>
+      <div v-reveal class="hero__stats">
+        <StatInventory />
+      </div>
+
     </div>
   </section>
 </template>
@@ -258,25 +236,11 @@ const statIcons = [bars, bolt, diamond, calendar]
 /* --- Stats --------------------------------------------------------------- */
 
 .hero__stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: var(--px4);
   margin-top: clamp(40px, 6vw, 72px);
+  /* The window casts an 8px shadow; leave room for it. */
   padding-right: var(--px2);
   padding-bottom: var(--px2);
-}
-
-.stat__value {
-  font-size: clamp(28px, 3.6vw, 38px);
-  color: var(--c-accent);
-  line-height: 1.05;
-}
-
-.stat__note {
-  font-size: 13px;
-  color: var(--c-dim);
-  line-height: 1.5;
-  margin-top: var(--px);
+  max-width: 560px;
 }
 
 @media (max-width: 720px) {

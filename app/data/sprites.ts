@@ -16,17 +16,18 @@ export interface Sprite {
 }
 
 /* --- Avatar --------------------------------------------------------------
-   Rendered in greys rather than natural skin tones: this is a face drawn by a
-   monitor, not a photograph. Two frames so it can blink.
+   A Game Boy Color character sprite: warm skin against a cool shirt, with the
+   headphones in teal so they read as a separate object. Two frames so it can
+   blink.
    ---------------------------------------------------------------------- */
 
 const PHOSPHOR = {
-  K: '#2e2e2e', // hair / darkest
-  S: '#7d7d7d', // mid tone
-  L: '#b4b4b4', // light tone
-  E: '#0a0a0a', // eyes / ink
-  H: '#ececec', // headphones — brightest, so they read as a separate object
-  B: '#4a4a4a', // shoulders
+  K: '#3a2f52', // hair
+  S: '#d99a6c', // skin shadow
+  L: '#f2c49b', // skin
+  E: '#14121f', // eyes / ink
+  H: '#4fd6c4', // headphones — teal, so they read against the warm skin
+  B: '#3a4070', // shoulders
 }
 
 /* Eyes are two pixels tall, so blinking can drop the upper half and leave the

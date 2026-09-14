@@ -9,6 +9,8 @@ export interface Stat {
   label: string
   value: string
   note: string
+  /** Short caption for the inventory slot, where space is tight. */
+  short: string
 }
 
 export interface Language {
@@ -34,10 +36,10 @@ export const profile = {
     'Software engineer specialising in front-end architecture, performance, and AI-assisted delivery with Nuxt.js and Vue.js — 400,000+ users, 35M+ requests monthly.',
 
   stats: [
-    { label: 'Unique users / mo', value: '400K+', note: 'on the platform I architected' },
-    { label: 'Requests / mo', value: '35M+', note: 'served without downtime' },
-    { label: 'Pages at 90+', value: '13K+', note: 'Lighthouse, post-migration' },
-    { label: 'Years shipping', value: '5+', note: 'since 2021, professionally' },
+    { label: 'Unique users / mo', short: 'Users', value: '400K+', note: 'on the platform I architected' },
+    { label: 'Requests / mo', short: 'Requests', value: '35M+', note: 'served without downtime' },
+    { label: 'Pages at 90+', short: 'Lighthouse', value: '13K+', note: 'scoring 90+ post-migration' },
+    { label: 'Years shipping', short: 'Years', value: '5+', note: 'since 2021, professionally' },
   ] satisfies Stat[],
 
   // Short, factual career narrative. First person, no embellishment.

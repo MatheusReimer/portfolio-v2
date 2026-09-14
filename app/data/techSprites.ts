@@ -5,8 +5,10 @@
  * 16 pixels a logo is a silhouette, and a clean silhouette reads better than a
  * bad likeness.
  *
- * The brand colours are kept in the source and flattened to grey at export by
- * `toMono`. Deleting that wrapper is all it takes to bring the colour back.
+ * They carry their real brand colours: against an indigo UI these read as
+ * distinct objects, and a recruiter scanning the page recognises the stack
+ * faster from colour than from a 16-pixel silhouette. `toMono` below can flatten
+ * any of them to grey if a future scheme needs it.
  */
 import type { Sprite } from './sprites'
 
@@ -35,7 +37,7 @@ const RAMP_HIGH = 0.91
 /** Where a single-colour icon lands: bright enough to read on a dark panel. */
 const RAMP_SOLO = 0.68
 
-function toMono(sprite: Sprite): Sprite {
+export function toMono(sprite: Sprite): Sprite {
   const keys = Object.keys(sprite.palette)
   const ranked = [...keys].sort(
     (a, b) => luminance(sprite.palette[a]!) - luminance(sprite.palette[b]!),
@@ -268,18 +270,18 @@ const azureColour: Sprite = {
   palette: { O: '#0078d4' },
 }
 
-export const vue = toMono(vueColour)
-export const nuxt = toMono(nuxtColour)
-export const node = toMono(nodeColour)
-export const angular = toMono(angularColour)
-export const react = toMono(reactColour)
-export const azure = toMono(azureColour)
+export const vue = vueColour
+export const nuxt = nuxtColour
+export const node = nodeColour
+export const angular = angularColour
+export const react = reactColour
+export const azure = azureColour
 
-export const typescript = toMono(tile(MARK_T, '#3178c6', '#ffffff'))
-export const javascript = toMono(tile(MARK_J, '#f0db4f', '#23241f'))
-export const csharp = toMono(tile(MARK_HASH, '#8a3f9e', '#ffffff'))
-export const dotnet = toMono(tile(MARK_DOT, '#5f3f9e', '#ffffff'))
-export const python = toMono(tile(MARK_SNAKE, '#2f6fa8', '#ffd343'))
+export const typescript = tile(MARK_T, '#3178c6', '#ffffff')
+export const javascript = tile(MARK_J, '#f0db4f', '#23241f')
+export const csharp = tile(MARK_HASH, '#8a3f9e', '#ffffff')
+export const dotnet = tile(MARK_DOT, '#5f3f9e', '#ffffff')
+export const python = tile(MARK_SNAKE, '#2f6fa8', '#ffd343')
 
 export const techSprites = {
   vue,

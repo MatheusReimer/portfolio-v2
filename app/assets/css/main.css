@@ -1,15 +1,15 @@
 /* =============================================================================
-   Pixel design system — monochrome
+   Pixel design system — Game Boy Color
    -----------------------------------------------------------------------------
    Everything snaps to a 4px pixel unit. No border-radius, no blurred shadows,
    no smooth easing — edges are hard and motion is stepped, the way a sprite
    moves.
 
-   The scheme is neutral greys only. With hue gone, value carries the entire
-   hierarchy, so the ramp below is spaced by measured contrast rather than by
-   eye, and white is treated as the accent — the brightest thing on screen is
-   what the reader looks at first. Pixel type stays on headings and labels;
-   running prose is Inter.
+   The scheme is Game Boy Color era: an indigo ground with gold as the key
+   light, teal and coral supporting. Three hues, no more — restraint is what
+   separates a considered retro palette from a clown car. The ramp is spaced by
+   measured contrast, recorded beside each token. Pixel type stays on headings
+   and labels; running prose is Inter.
    ========================================================================== */
 
 /* --- Tokens --------------------------------------------------------------- */
@@ -21,27 +21,33 @@
   --px3: 12px;
   --px4: 16px;
 
-  /* Neutral ramp. With hue removed, value is the only thing left to build
-     hierarchy from, so the steps are spaced by measured contrast rather than
-     by eye: every colour used for text clears 4.5:1 against --c-bg. */
-  --c-void: #070707;
-  --c-bg: #0e0e0e;
-  --c-panel: #151515;
-  --c-panel-2: #1d1d1d;
-  --c-line: #2b2b2b;
-  --c-line-hi: #4a4a4a;
+  /* Game Boy Color era. The GBC could show far more than the DMG's four
+     greens, and its best-looking games leaned on one warm key light against a
+     cool base rather than on many hues at once. So: an indigo ground, gold as
+     the key, teal and coral as the two supporting notes, nothing else.
 
-  /* Text ramp.                          contrast on --c-bg */
-  --c-faint: #838383; /*  5.1:1 — small labels     */
-  --c-dim: #9b9b9b; /*  6.9:1 — secondary prose  */
-  --c-text: #bdbdbd; /* 10.3:1 — body             */
-  --c-bright: #e6e6e6; /* 15.7:1 — headings         */
+     Ratios below are measured against --c-bg; everything used for text clears
+     4.5:1. */
+  --c-void: #0e0f1c;
+  --c-bg: #15172a;
+  --c-panel: #1d2038;
+  --c-panel-2: #272b4a;
+  --c-line: #3a4070;
+  --c-line-hi: #565e9c;
 
-  /* White is the accent: in a monochrome scheme the brightest thing leads. */
-  --c-accent: #ffffff;
-  --c-accent-dim: #3a3a3a;
-  --c-highlight: #cfcfcf;
-  --c-shadow: #000000;
+  /* Text ramp.                        contrast on --c-bg */
+  --c-faint: #8a92c8; /*  5.9:1 — small labels     */
+  --c-dim: #a7aede; /*  8.1:1 — secondary prose  */
+  --c-text: #c9cff2; /* 11.4:1 — body             */
+  --c-bright: #f2f4ff; /* 16.4:1 — headings         */
+
+  /* Gold is the key light and the accent. */
+  --c-accent: #ffc53d; /* 11.2:1 */
+  --c-accent-dim: #7a5a12;
+  /* Teal and coral are the only other hues on the page. */
+  --c-highlight: #4fd6c4;
+  --c-warm: #ff7d6e;
+  --c-shadow: #070812;
 
   --font-display: 'Pixelify Sans', 'Courier New', monospace;
   --font-label: 'Silkscreen', 'Courier New', monospace;
@@ -327,7 +333,7 @@ ul {
 }
 
 .px-btn--primary:hover {
-  background: #dcdcdc;
+  background: #ffd873;
 }
 
 /* --- Chips ---------------------------------------------------------------- */
@@ -426,7 +432,7 @@ ul {
   pointer-events: none;
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.026) 0 1px,
+    rgba(180, 200, 255, 0.03) 0 1px,
     transparent 1px 3px
   );
 }

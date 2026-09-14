@@ -3,7 +3,9 @@ import { mount } from '@vue/test-utils'
 import PixelDissolve from '../app/components/PixelDissolve.vue'
 import PixelMeter from '../app/components/PixelMeter.vue'
 import PixelCarousel from '../app/components/PixelCarousel.vue'
-import { techSprites, techIcon } from '../app/data/techSprites'
+import StatInventory from '../app/components/StatInventory.vue'
+import { profile } from '../app/data/profile'
+import { techSprites, techIcon, toMono } from '../app/data/techSprites'
 import type { Sprite } from '../app/data/sprites'
 
 describe('tech sprites', () => {
@@ -143,5 +145,88 @@ describe('PixelCarousel', () => {
     const live = mountCarousel().find('[aria-live="polite"]')
     expect(live.exists()).toBe(true)
     expect(live.text()).toBe('1 of 3')
+  })
+})
+
+describe('toMono', () => {
+  it('spreads a two-colour sprite across the legible grey ramp', () => {
+    const mono = toMono(techSprites.typescript)
+    const greys = Object.values(mono.palette)
+    expect(greys).toHaveLength(2)
+    for (const g of greys) expect(g).toMatch(/^#([0-9a-f]{2})\1\1$/i)
+    expect(new Set(greys).size).toBe(2)
+  })
+
+  it('lands a single-colour sprite bright enough to read on a dark panel', () => {
+    // Angular's red is dark; a naive luminance map would bury it.
+    const mono = toMono(techSprites.angular)
+    const value = parseInt(Object.values(mono.palette)[0]!.slice(1, 3), 16)
+    expect(value).toBeGreaterThan(140)
+  })
+
+  it('leaves the sprite geometry untouched', () => {
+    expect(toMono(techSprites.vue).rows).toEqual(techSprites.vue.rows)
+  })
+})
+
+describe('StatInventory', () => {
+  const mountInventory = () =>
+    mount(StatInventory, {
+      global: {
+        stubs: {
+          PixelSprite: true,
+          PixelWindow: { template: '<div><slot /></div>' },
+        },
+      },
+    })
+
+  it('renders one slot per stat', () => {
+    expect(mountInventory().findAll('.slot')).toHaveLength(profile.stats.length)
+  })
+
+  it('shows every figure in its slot, so the numbers need no interaction', () => {
+    const counts = mountInventory().findAll('.slot__count').map(n => n.text())
+    expect(counts).toEqual(profile.stats.map(s => s.value))
+  })
+
+  it('selects the first slot by default', () => {
+    const slots = mountInventory().findAll('.slot')
+    expect(slots[0]!.classes()).toContain('is-active')
+    expect(slots[0]!.attributes('aria-selected')).toBe('true')
+    expect(slots[1]!.attributes('aria-selected')).toBe('false')
+  })
+
+  it('uses tab semantics and a roving tabindex', () => {
+    const wrapper = mountInventory()
+    expect(wrapper.find('[role="tablist"]').exists()).toBe(true)
+    const slots = wrapper.findAll('.slot')
+    expect(slots[0]!.attributes('tabindex')).toBe('0')
+    expect(slots[1]!.attributes('tabindex')).toBe('-1')
+    expect(slots[0]!.attributes('aria-controls')).toBe('stat-panel-0')
+  })
+
+  it('keeps every readout in the DOM, hiding all but the active one', () => {
+    const wrapper = mountInventory()
+    const panels = wrapper.findAll('[role="tabpanel"]')
+    expect(panels).toHaveLength(profile.stats.length)
+    expect(panels[0]!.attributes('hidden')).toBeUndefined()
+    expect(panels[1]!.attributes('hidden')).toBeDefined()
+  })
+
+  it('selecting a slot swaps the readout', async () => {
+    const wrapper = mountInventory()
+    await wrapper.findAll('.slot')[2]!.trigger('click')
+    expect(wrapper.findAll('.slot')[2]!.classes()).toContain('is-active')
+    expect(wrapper.findAll('[role="tabpanel"]')[2]!.attributes('hidden')).toBeUndefined()
+    expect(wrapper.findAll('[role="tabpanel"]')[0]!.attributes('hidden')).toBeDefined()
+  })
+
+  it('arrow keys move selection and wrap at both ends', async () => {
+    const wrapper = mountInventory()
+    const slots = wrapper.findAll('.slot')
+    await slots[0]!.trigger('keydown.left')
+    expect(wrapper.findAll('.slot').at(-1)!.classes()).toContain('is-active')
+    await wrapper.findAll('.slot').at(-1)!.trigger('keydown.right')
+    expect(wrapper.findAll('.slot')[0]!.classes()).toContain('is-active')
   })
 })
