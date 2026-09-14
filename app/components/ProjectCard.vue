@@ -74,7 +74,7 @@ defineProps<{ project: Project; index: string }>()
 
 .card__index {
   font-size: 26px;
-  color: var(--c-line-hi);
+  color: var(--c-faint);
   line-height: 1;
 }
 
@@ -98,7 +98,7 @@ defineProps<{ project: Project; index: string }>()
 }
 
 .card__h4 {
-  color: var(--c-line-hi);
+  color: var(--c-faint);
 }
 
 .card__body {

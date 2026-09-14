@@ -24,7 +24,7 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: profile.metaDescription },
         { name: 'author', content: profile.name },
-        { name: 'theme-color', content: '#07090f' },
+        { name: 'theme-color', content: '#070707' },
         { name: 'color-scheme', content: 'dark' },
         // Defence-in-depth. GitHub Pages cannot set real response headers, so
         // these meta equivalents are the only control available here.

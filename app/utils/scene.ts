@@ -63,21 +63,21 @@ function mix(a: string, b: string, t: number): string {
 }
 
 const palette = {
-  skyTop: '#050705',
-  skyHorizon: '#17492a',
-  star: '#9fe8b4',
-  starDim: '#3f7a4f',
-  glow: '#1d6b3a',
-  beamHot: '#3bf07a',
-  hot: '#d8ffd9',
-  floor: '#070d08',
-  floorLine: '#1d4a2a',
-  rackMid: '#09130b',
-  rackNear: '#030603',
-  rimMid: '#2a6b3f',
-  rimNear: '#1c4a29',
-  ledGreen: '#3bf07a',
-  ledAmber: '#ffb000',
+  skyTop: '#070707',
+  skyHorizon: '#2c2c2c',
+  star: '#e0e0e0',
+  starDim: '#6e6e6e',
+  glow: '#4c4c4c',
+  beamHot: '#cfcfcf',
+  hot: '#ffffff',
+  floor: '#0b0b0b',
+  floorLine: '#323232',
+  rackMid: '#101010',
+  rackNear: '#050505',
+  rimMid: '#606060',
+  rimNear: '#3c3c3c',
+  ledOn: '#e8e8e8',
+  ledDim: '#9a9a9a',
 }
 
 /**
@@ -101,7 +101,7 @@ function rack(
   // Top edge catches light too.
   out.push({ x, y: top, w, h: 1, f: rim, o: 0.55 })
   // Contact shadow, so the slab sits on the floor instead of hovering.
-  out.push({ x: x - 1, y: HORIZON, w: w + 2, h: 2, f: '#020402', o: 0.85 })
+  out.push({ x: x - 1, y: HORIZON, w: w + 2, h: 2, f: '#020202', o: 0.85 })
 
   for (let y = top + 4; y < HORIZON - 3; y += 6) {
     if (rng() < 0.45) continue
@@ -110,7 +110,7 @@ function rack(
       y,
       w: 2,
       h: 1,
-      f: rng() < 0.18 ? palette.ledAmber : palette.ledGreen,
+      f: rng() < 0.18 ? palette.ledDim : palette.ledOn,
       o: 0.55 + rng() * 0.45,
     })
   }

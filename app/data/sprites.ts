@@ -16,17 +16,17 @@ export interface Sprite {
 }
 
 /* --- Avatar --------------------------------------------------------------
-   Rendered in phosphor greens rather than natural skin tones: this is a face
-   drawn by a CRT, not a photograph. Two frames so it can blink.
+   Rendered in greys rather than natural skin tones: this is a face drawn by a
+   monitor, not a photograph. Two frames so it can blink.
    ---------------------------------------------------------------------- */
 
 const PHOSPHOR = {
-  K: '#123a1c', // hair / darkest
-  S: '#2f8f4f', // mid tone
-  L: '#57d17f', // light tone
-  E: '#04170a', // eyes / ink
-  H: '#ffb000', // headphones (amber against the green)
-  B: '#1b5730', // shoulders
+  K: '#2e2e2e', // hair / darkest
+  S: '#7d7d7d', // mid tone
+  L: '#b4b4b4', // light tone
+  E: '#0a0a0a', // eyes / ink
+  H: '#ececec', // headphones — brightest, so they read as a separate object
+  B: '#4a4a4a', // shoulders
 }
 
 /* Eyes are two pixels tall, so blinking can drop the upper half and leave the

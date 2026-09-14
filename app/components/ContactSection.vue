@@ -73,7 +73,7 @@ import { mail, socialIcons, terminal } from '~/data/sprites'
   display: flex;
   align-items: center;
   gap: var(--px);
-  color: var(--c-line-hi);
+  color: var(--c-faint);
 }
 
 .contact__social-icon {

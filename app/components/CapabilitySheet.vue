@@ -118,7 +118,7 @@ const toggle = (id: string) => {
 }
 
 .sheet__bar-legend {
-  color: var(--c-line-hi);
+  color: var(--c-faint);
 }
 
 /* --- Row head ------------------------------------------------------------ */

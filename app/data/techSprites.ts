@@ -1,12 +1,56 @@
 /**
- * 16x16 multi-colour tech icons, drawn as inventory-style item sprites.
+ * 16x16 tech icons, drawn as inventory-style item sprites.
  *
  * These are deliberately stylised marks rather than faithful logo traces: at
  * 16 pixels a logo is a silhouette, and a clean silhouette reads better than a
- * bad likeness. They carry their own brand-ish colour so they pop as objects
- * against the monochrome phosphor UI.
+ * bad likeness.
+ *
+ * The brand colours are kept in the source and flattened to grey at export by
+ * `toMono`. Deleting that wrapper is all it takes to bring the colour back.
  */
 import type { Sprite } from './sprites'
+
+/* --- Monochrome mapping ---------------------------------------------------
+   Desaturating brand colours by luminance does not work: Angular red and C#
+   purple are both dark, so they collapse to near-black and vanish against a
+   dark panel. Instead each sprite's own colours are ranked by luminance and
+   spread across a fixed legible ramp, so every icon reads at the same strength
+   whatever it started as.
+   ------------------------------------------------------------------------ */
+
+/** Perceptual luminance of an #rrggbb colour, 0-1. */
+function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+}
+
+function grey(t: number): string {
+  const v = Math.round(Math.min(1, Math.max(0, t)) * 255)
+  return `#${v.toString(16).padStart(2, '0').repeat(3)}`
+}
+
+/** Darkest and lightest greys any icon is allowed to use. */
+const RAMP_LOW = 0.24
+const RAMP_HIGH = 0.91
+/** Where a single-colour icon lands: bright enough to read on a dark panel. */
+const RAMP_SOLO = 0.68
+
+function toMono(sprite: Sprite): Sprite {
+  const keys = Object.keys(sprite.palette)
+  const ranked = [...keys].sort(
+    (a, b) => luminance(sprite.palette[a]!) - luminance(sprite.palette[b]!),
+  )
+
+  const palette: Record<string, string> = {}
+  ranked.forEach((key, i) => {
+    palette[key]
+      = ranked.length === 1
+        ? grey(RAMP_SOLO)
+        : grey(RAMP_LOW + (RAMP_HIGH - RAMP_LOW) * (i / (ranked.length - 1)))
+  })
+
+  return { rows: sprite.rows, palette }
+}
 
 /**
  * Most language marks share a chassis: a filled tile with an 8x8 glyph inset.
@@ -87,7 +131,7 @@ const MARK_SNAKE = [
 /* --- Icons --------------------------------------------------------------- */
 
 /** Vue — the chevron, in two greens. */
-export const vue: Sprite = {
+const vueColour: Sprite = {
   rows: [
     '................',
     '................',
@@ -110,7 +154,7 @@ export const vue: Sprite = {
 }
 
 /** Nuxt — the mountain. */
-export const nuxt: Sprite = {
+const nuxtColour: Sprite = {
   rows: [
     '................',
     '................',
@@ -133,7 +177,7 @@ export const nuxt: Sprite = {
 }
 
 /** Node — a hex token. */
-export const node: Sprite = {
+const nodeColour: Sprite = {
   rows: [
     '................',
     '......OOOO......',
@@ -156,7 +200,7 @@ export const node: Sprite = {
 }
 
 /** Angular — the shield. */
-export const angular: Sprite = {
+const angularColour: Sprite = {
   rows: [
     '................',
     '.OOOOOOOOOOOOOO.',
@@ -179,7 +223,7 @@ export const angular: Sprite = {
 }
 
 /** React — the orbit ring. */
-export const react: Sprite = {
+const reactColour: Sprite = {
   rows: [
     '................',
     '.....OOOOOO.....',
@@ -202,7 +246,7 @@ export const react: Sprite = {
 }
 
 /** Azure — the cloud. */
-export const azure: Sprite = {
+const azureColour: Sprite = {
   rows: [
     '................',
     '................',
@@ -224,11 +268,18 @@ export const azure: Sprite = {
   palette: { O: '#0078d4' },
 }
 
-export const typescript = tile(MARK_T, '#3178c6', '#ffffff')
-export const javascript = tile(MARK_J, '#f0db4f', '#23241f')
-export const csharp = tile(MARK_HASH, '#8a3f9e', '#ffffff')
-export const dotnet = tile(MARK_DOT, '#5f3f9e', '#ffffff')
-export const python = tile(MARK_SNAKE, '#2f6fa8', '#ffd343')
+export const vue = toMono(vueColour)
+export const nuxt = toMono(nuxtColour)
+export const node = toMono(nodeColour)
+export const angular = toMono(angularColour)
+export const react = toMono(reactColour)
+export const azure = toMono(azureColour)
+
+export const typescript = toMono(tile(MARK_T, '#3178c6', '#ffffff'))
+export const javascript = toMono(tile(MARK_J, '#f0db4f', '#23241f'))
+export const csharp = toMono(tile(MARK_HASH, '#8a3f9e', '#ffffff'))
+export const dotnet = toMono(tile(MARK_DOT, '#5f3f9e', '#ffffff'))
+export const python = toMono(tile(MARK_SNAKE, '#2f6fa8', '#ffd343'))
 
 export const techSprites = {
   vue,

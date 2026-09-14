@@ -1,11 +1,15 @@
 /* =============================================================================
-   Pixel design system — CRT phosphor
+   Pixel design system — monochrome
    -----------------------------------------------------------------------------
    Everything snaps to a 4px pixel unit. No border-radius, no blurred shadows,
    no smooth easing — edges are hard and motion is stepped, the way a sprite
-   moves. Legibility is protected by keeping pixel type to headings and labels,
-   setting all running prose in Inter, and never using saturated green for
-   body copy (phosphor green on black is atmospheric but tiring to read).
+   moves.
+
+   The scheme is neutral greys only. With hue gone, value carries the entire
+   hierarchy, so the ramp below is spaced by measured contrast rather than by
+   eye, and white is treated as the accent — the brightest thing on screen is
+   what the reader looks at first. Pixel type stays on headings and labels;
+   running prose is Inter.
    ========================================================================== */
 
 /* --- Tokens --------------------------------------------------------------- */
@@ -17,24 +21,27 @@
   --px3: 12px;
   --px4: 16px;
 
-  /* Limited palette — a console palette, not a gradient ramp. */
-  --c-void: #050705;
-  --c-bg: #0a0f0a;
-  --c-panel: #0f170f;
-  --c-panel-2: #142014;
-  --c-line: #1e3320;
-  --c-line-hi: #2f5333;
+  /* Neutral ramp. With hue removed, value is the only thing left to build
+     hierarchy from, so the steps are spaced by measured contrast rather than
+     by eye: every colour used for text clears 4.5:1 against --c-bg. */
+  --c-void: #070707;
+  --c-bg: #0e0e0e;
+  --c-panel: #151515;
+  --c-panel-2: #1d1d1d;
+  --c-line: #2b2b2b;
+  --c-line-hi: #4a4a4a;
 
-  /* Text ramp. Prose sits well above the saturated accent in lightness. */
-  --c-faint: #5f9463;
-  --c-dim: #7fb584;
-  --c-text: #a8d4ab;
-  --c-bright: #d8ffd9;
+  /* Text ramp.                          contrast on --c-bg */
+  --c-faint: #838383; /*  5.1:1 — small labels     */
+  --c-dim: #9b9b9b; /*  6.9:1 — secondary prose  */
+  --c-text: #bdbdbd; /* 10.3:1 — body             */
+  --c-bright: #e6e6e6; /* 15.7:1 — headings         */
 
-  --c-accent: #3bf07a;
-  --c-accent-dim: #1d6b3a;
-  --c-amber: #ffb000;
-  --c-shadow: #030503;
+  /* White is the accent: in a monochrome scheme the brightest thing leads. */
+  --c-accent: #ffffff;
+  --c-accent-dim: #3a3a3a;
+  --c-highlight: #cfcfcf;
+  --c-shadow: #000000;
 
   --font-display: 'Pixelify Sans', 'Courier New', monospace;
   --font-label: 'Silkscreen', 'Courier New', monospace;
@@ -320,7 +327,7 @@ ul {
 }
 
 .px-btn--primary:hover {
-  background: #6bf99c;
+  background: #dcdcdc;
 }
 
 /* --- Chips ---------------------------------------------------------------- */
@@ -419,7 +426,7 @@ ul {
   pointer-events: none;
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(120, 255, 160, 0.028) 0 1px,
+    rgba(255, 255, 255, 0.026) 0 1px,
     transparent 1px 3px
   );
 }

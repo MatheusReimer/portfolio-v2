@@ -84,18 +84,15 @@ const statIcons = [bars, bolt, diamond, calendar]
       </div>
 
       <ul class="hero__stats">
-        <li
-          v-for="(stat, i) in profile.stats"
-          :key="stat.label"
-          v-reveal="i"
-          class="stat px-frame px-frame--hover"
-        >
-          <div class="stat__top">
-            <PixelSprite :sprite="statIcons[i] ?? diamond" :scale="2" class="stat__icon" />
+        <li v-for="(stat, i) in profile.stats" :key="stat.label" v-reveal="i">
+          <PixelWindow
+            :title="stat.label"
+            :icon="statIcons[i] ?? diamond"
+            :emphasis="i === 0"
+          >
             <p class="stat__value px-mono-num">{{ stat.value }}</p>
-          </div>
-          <p class="px-label stat__label">{{ stat.label }}</p>
-          <p class="stat__note">{{ stat.note }}</p>
+            <p class="stat__note">{{ stat.note }}</p>
+          </PixelWindow>
         </li>
       </ul>
     </div>
@@ -265,40 +262,21 @@ const statIcons = [bars, bolt, diamond, calendar]
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: var(--px4);
   margin-top: clamp(40px, 6vw, 72px);
-}
-
-.stat {
-  padding: var(--px3) var(--px4);
-  background: color-mix(in srgb, var(--c-panel) 88%, transparent);
-  backdrop-filter: blur(2px);
-}
-
-.stat__top {
-  display: flex;
-  align-items: center;
-  gap: var(--px2);
-}
-
-.stat__icon {
-  color: var(--c-accent);
-  flex: none;
+  padding-right: var(--px2);
+  padding-bottom: var(--px2);
 }
 
 .stat__value {
-  font-size: clamp(26px, 3.4vw, 34px);
+  font-size: clamp(28px, 3.6vw, 38px);
   color: var(--c-accent);
-  line-height: 1.1;
-}
-
-.stat__label {
-  color: var(--c-bright);
-  margin-block: var(--px) 2px;
+  line-height: 1.05;
 }
 
 .stat__note {
   font-size: 13px;
   color: var(--c-dim);
   line-height: 1.5;
+  margin-top: var(--px);
 }
 
 @media (max-width: 720px) {

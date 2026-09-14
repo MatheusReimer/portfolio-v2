@@ -30,6 +30,6 @@ const year = new Date().getFullYear()
 }
 
 .ftr__built {
-  color: var(--c-line-hi);
+  color: var(--c-faint);
 }
 </style>
