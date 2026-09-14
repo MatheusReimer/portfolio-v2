@@ -159,8 +159,8 @@ defineProps<{ role: Role; isCurrent: boolean }>()
 
 .entry__stack {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
-  gap: var(--px2);
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: var(--px4);
   margin-bottom: var(--px4);
 }
 

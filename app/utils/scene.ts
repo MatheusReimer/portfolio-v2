@@ -35,16 +35,33 @@ export interface Scene {
   near: Rect[]
 }
 
-/** Scene pixels. Each one renders as a chunky block once scaled up. */
-const W = 256
-const H = 144
-/** Where the floor meets the back wall. */
-const HORIZON = 84
+/** Scene pixels. Each one renders as a chunky block once scaled up.
+ *
+ *  The 256x112 ratio (~2.3:1) is chosen to sit close to the hero's own shape.
+ *  The scene is painted with background-size: cover, so a mismatched ratio gets
+ *  centre-cropped — at 16:9 the top of the frame was being cut away entirely,
+ *  taking the flight paths with it. Matching the ratio keeps the whole scene,
+ *  sky and street, actually on screen. */
+export const SCENE_W = 256
+export const SCENE_H = 112
+const W = SCENE_W
+const H = SCENE_H
+/** Where the ground meets the sky. */
+export const HORIZON = 58
 /**
  * The light source sits right of centre, so the left two thirds stay dark and
  * the hero copy has somewhere quiet to live.
  */
 const LIGHT_X = 178
+
+/**
+ * No building may rise above this line, and nothing that flies may drop below
+ * it. Aircraft cross the sky strictly above the skyline — they never pass in
+ * front of, or into, a building.
+ */
+export const SKYLINE_CEILING = 24
+/** The road surface, where street traffic runs. */
+export const ROAD_Y = 88
 
 function makeRng(seed: number) {
   let s = seed >>> 0
@@ -103,16 +120,20 @@ function rack(
   // Contact shadow, so the slab sits on the floor instead of hovering.
   out.push({ x: x - 1, y: HORIZON, w: w + 2, h: 2, f: '#070812', o: 0.85 })
 
-  for (let y = top + 4; y < HORIZON - 3; y += 6) {
-    if (rng() < 0.45) continue
-    out.push({
-      x: rimX === x ? x + 2 : x + 1,
-      y,
-      w: 2,
-      h: 1,
-      f: rng() < 0.18 ? palette.ledDim : palette.ledOn,
-      o: 0.55 + rng() * 0.45,
-    })
+  // Lit windows: a grid down the face, with enough dark ones that the building
+  // reads as occupied rather than as a lamp.
+  for (let wy = top + 3; wy < HORIZON - 2; wy += 3) {
+    for (let wx = x + 1; wx < x + w - 1; wx += 3) {
+      if (rng() < 0.52) continue
+      out.push({
+        x: wx,
+        y: wy,
+        w: 1,
+        h: 2,
+        f: rng() < 0.12 ? palette.ledDim : palette.ledOn,
+        o: 0.35 + rng() * 0.5,
+      })
+    }
   }
 }
 
@@ -138,7 +159,7 @@ export function buildScene(seed = 20260914): Scene {
   // Stars, kept in the darker upper bands where they actually show.
   for (let i = 0; i < 80; i++) {
     const x = Math.floor(rng() * W)
-    const y = Math.floor(rng() * (HORIZON - 30))
+    const y = Math.floor(rng() * (HORIZON - 34))
     const bright = rng() < 0.28
     far.push({
       x,
@@ -172,7 +193,7 @@ export function buildScene(seed = 20260914): Scene {
   // No hard core here any more: the ship itself is the bright object standing
   // in this light, and it is a DOM sprite so it can launch. What stays is the
   // glare it leaves behind.
-  far.push({ x: LIGHT_X - 5, y: HORIZON - 20, w: 10, h: 20, f: palette.glow, o: 0.4 })
+  far.push({ x: LIGHT_X - 5, y: HORIZON - 16, w: 10, h: 16, f: palette.glow, o: 0.4 })
 
   // --- Mid: the floor and the receding racks -----------------------------
   mid.push({ x: 0, y: HORIZON, w: W, h: H - HORIZON, f: palette.floor })
@@ -194,50 +215,53 @@ export function buildScene(seed = 20260914): Scene {
     })
   }
 
-  // Floor bands, spaced wider as they come toward the viewer.
-  let y = HORIZON + 2
-  let gap = 2
-  while (y < H) {
-    mid.push({ x: 0, y, w: W, h: 1, f: palette.floorLine, o: 0.35 })
-    y += gap
-    gap = Math.round(gap * 1.45) + 1
+  // --- Street level ------------------------------------------------------
+  // Asphalt, kerbs, and a dashed centre line. The road runs across the frame
+  // rather than receding, so cars can cross it at a constant size.
+  mid.push({ x: 0, y: ROAD_Y - 8, w: W, h: 2, f: palette.floorLine, o: 0.5 })
+  mid.push({ x: 0, y: ROAD_Y - 6, w: W, h: 18, f: '#0c0e1b' })
+  mid.push({ x: 0, y: ROAD_Y - 6, w: W, h: 1, f: palette.floorLine, o: 0.7 })
+  mid.push({ x: 0, y: ROAD_Y + 11, w: W, h: 1, f: palette.floorLine, o: 0.7 })
+
+  for (let x = 2; x < W; x += 12) {
+    mid.push({ x, y: ROAD_Y + 3, w: 6, h: 1, f: palette.floorLine, o: 0.85 })
   }
 
-  // A handful of lines converging on the core. Few and faint: this is floor,
-  // not the subject.
-  for (let k = -5; k <= 5; k++) {
-    if (k === 0) continue
-    const endX = LIGHT_X + k * 52
-    for (let yy = HORIZON; yy < H; yy += 3) {
-      const p = (yy - HORIZON) / (H - HORIZON)
-      const x = Math.round(LIGHT_X + (endX - LIGHT_X) * p * p)
-      if (x < -4 || x > W + 4) break
-      mid.push({ x, y: yy, w: 1, h: 3, f: palette.floorLine, o: 0.4 })
-    }
+  // City light reflected on wet asphalt.
+  for (let i = 0; i < 26; i++) {
+    mid.push({
+      x: Math.floor(rng() * W),
+      y: ROAD_Y - 5 + Math.floor(rng() * 4),
+      w: 1,
+      h: 1,
+      f: palette.ledOn,
+      o: 0.08 + rng() * 0.14,
+    })
   }
 
+  // Distant blocks, small and set back.
   const midCols = [
-    { x: 96, w: 9, top: 58 },
-    { x: 112, w: 7, top: 64 },
-    { x: 126, w: 5, top: 69 },
-    { x: 214, w: 7, top: 64 },
-    { x: 228, w: 9, top: 58 },
+    { x: 96, w: 11, top: 36 },
+    { x: 112, w: 9, top: 41 },
+    { x: 126, w: 7, top: 45 },
+    { x: 140, w: 6, top: 48 },
+    { x: 200, w: 7, top: 46 },
+    { x: 212, w: 9, top: 40 },
+    { x: 226, w: 11, top: 34 },
   ]
   for (const c of midCols) rack(mid, c.x, c.top, c.w, palette.rackMid, palette.rimMid, rng)
 
   // --- Near: the framing architecture ------------------------------------
+  // The near blocks frame the view. Their tops are held at or below
+  // SKYLINE_CEILING so the sky above stays clear for air traffic.
   const nearCols = [
-    { x: -2, w: 26, top: 4 },
-    { x: 28, w: 19, top: 20 },
-    { x: 52, w: 14, top: 36 },
-    { x: 72, w: 10, top: 48 },
-    { x: 244, w: 14, top: 20 },
+    { x: -2, w: 26, top: 24 },
+    { x: 28, w: 19, top: 30 },
+    { x: 52, w: 15, top: 36 },
+    { x: 72, w: 11, top: 42 },
+    { x: 238, w: 20, top: 26 },
   ]
   for (const c of nearCols) rack(near, c.x, c.top, c.w, palette.rackNear, palette.rimNear, rng)
-
-  // Overhead trays, tying the frame together across the top.
-  near.push({ x: 0, y: 0, w: W, h: 4, f: palette.rackNear })
-  near.push({ x: 0, y: 4, w: W, h: 1, f: palette.rimNear, o: 0.5 })
 
   return { width: W, height: H, far, mid, near }
 }

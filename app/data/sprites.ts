@@ -395,9 +395,77 @@ export const flameFrames: Sprite[] = [
   },
 ]
 
+/* --- Sky and street traffic ----------------------------------------------- */
+
+/** A side-on airliner. Flies high above the skyline, never through it. */
+export const plane: Sprite = {
+  rows: [
+    '..........O.....',
+    '..........OO....',
+    '...OOOOOOOOOOO..',
+    '.OOOOOOOOOOOOOO.',
+    '...OOOOOOOOOOO..',
+    '......OOO.......',
+    '................',
+  ],
+  palette: { O: '#c9cff2' },
+}
+
+/** A car, small enough that two tones is all it can carry. */
+export const car: Sprite = {
+  rows: [
+    '..OOOO..',
+    '.OOOOOO.',
+    'OOOOOOOO',
+    '.W....W.',
+  ],
+  palette: { O: '#8a92c8', W: '#3a4070' },
+}
+
+/* --- Shared run-length conversion -----------------------------------------
+   PixelSprite, the data-URI serialisers and the in-scene sprite group all need
+   the same merged horizontal runs. One implementation, used by all of them.
+   ------------------------------------------------------------------------ */
+
+export interface SpriteRun {
+  x: number
+  y: number
+  w: number
+  fill: string
+}
+
+export function spriteRuns(sprite: Sprite): SpriteRun[] {
+  const out: SpriteRun[] = []
+
+  sprite.rows.forEach((row, y) => {
+    let start = 0
+    let current = ''
+
+    const flush = (end: number) => {
+      if (!current) return
+      const fill = sprite.palette[current]
+      if (fill) out.push({ x: start, y, w: end - start, fill })
+    }
+
+    for (let x = 0; x < row.length; x++) {
+      const ch = row[x] ?? '.'
+      if (ch !== current) {
+        flush(x)
+        current = ch === '.' ? '' : ch
+        start = x
+      }
+    }
+    flush(row.length)
+  })
+
+  return out
+}
+
 export const sprites = {
   avatar,
   rocket,
+  plane,
+  car,
   avatarBlink,
   mail,
   arrow,

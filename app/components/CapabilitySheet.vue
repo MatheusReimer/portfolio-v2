@@ -265,8 +265,8 @@ const toggle = (id: string) => {
 
 .row__tools {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
-  gap: var(--px2);
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: var(--px4);
   padding: var(--px3) var(--px2) var(--px2);
 }
 

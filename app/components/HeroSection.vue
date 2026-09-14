@@ -6,7 +6,6 @@ import { avatar, avatarBlink, mail, pin, socialIcons, terminal } from '~/data/sp
 <template>
   <section id="top" class="hero">
     <PixelScene />
-    <PixelRocket />
 
     <div class="px-shell hero__content">
       <div class="hero__grid">

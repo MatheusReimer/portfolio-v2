@@ -135,8 +135,8 @@ defineProps<{ project: Project; index: string }>()
 
 .card__tech {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
-  gap: var(--px2);
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: var(--px4);
   margin-top: auto;
   padding-top: var(--px2);
 }

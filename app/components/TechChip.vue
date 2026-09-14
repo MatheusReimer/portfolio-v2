@@ -44,12 +44,23 @@ const iconUri = computed(() => (icon.value ? spriteToDataUri(icon.value) : null)
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  /* The frame is a contrasting colour, not the fill colour. Drawn in the fill
+     colour the chips merged into one continuous block, because the 4px ring on
+     each side closed the gap between them exactly. */
   box-shadow:
-    0 calc(-1 * var(--px)) 0 0 var(--c-panel-2),
-    0 var(--px) 0 0 var(--c-panel-2),
-    calc(-1 * var(--px)) 0 0 0 var(--c-panel-2),
-    var(--px) 0 0 0 var(--c-panel-2);
-  transition: color var(--step), background var(--step);
+    0 calc(-1 * var(--px)) 0 0 var(--c-line),
+    0 var(--px) 0 0 var(--c-line),
+    calc(-1 * var(--px)) 0 0 0 var(--c-line),
+    var(--px) 0 0 0 var(--c-line);
+  transition: color var(--step), background var(--step), box-shadow var(--step);
+}
+
+.tech:hover {
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--c-line-hi),
+    0 var(--px) 0 0 var(--c-line-hi),
+    calc(-1 * var(--px)) 0 0 0 var(--c-line-hi),
+    var(--px) 0 0 0 var(--c-line-hi);
 }
 
 .tech:hover {

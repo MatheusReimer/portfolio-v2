@@ -48,7 +48,9 @@ export const profile = {
       value: '400K+',
       note: 'on the platform I architected',
       detail:
-        'A global marketing platform. I designed and built the prefetched Nuxt.js architecture that replaced its legacy SPA, and every one of those users is served by it.',
+        'A global marketing platform. I designed and built the prefetched Nuxt.js architecture that replaced its legacy SPA, and every one of those users is served by it. Pages come from the edge rather than from an application server, which is what made the number a capacity problem instead of a cost problem.',
+      href: 'https://www.chatsworth.com',
+      hrefLabel: 'chatsworth.com',
     },
     {
       label: 'Requests / mo',
@@ -56,7 +58,9 @@ export const profile = {
       value: '35M+',
       note: 'served without downtime',
       detail:
-        'Handled through a zero-downtime migration off the old system. The new architecture removed backend load from ordinary page requests entirely, which is what made the volume survivable.',
+        'Handled through a zero-downtime migration off the old system, with the legacy platform kept alive beside it until the last route moved. The new architecture removed backend load from ordinary page requests entirely, which is what made the volume survivable — and incidentally neutralised the DDoS exposure the old setup carried.',
+      href: 'https://www.chatsworth.com',
+      hrefLabel: 'chatsworth.com',
     },
     {
       label: 'Pages at 90+',
@@ -64,7 +68,9 @@ export const profile = {
       value: '13K+',
       note: 'scoring 90+ post-migration',
       detail:
-        'Lighthouse 90+ across more than thirteen thousand pages after the rebuild — not a hand-picked sample. Performance treated as an architecture problem rather than a tooling one.',
+        'Lighthouse 90+ across more than thirteen thousand pages after the rebuild — the whole site, not a hand-picked sample. Reached by treating performance as an architecture problem rather than a tooling one: prefetch windows tied to navigation intent, route-level code splitting, and lazy hydration, chosen after benchmarking SSR against CSR under real traffic.',
+      href: 'https://www.chatsworth.com',
+      hrefLabel: 'chatsworth.com',
     },
     {
       label: 'Years shipping',
@@ -72,7 +78,7 @@ export const profile = {
       value: '5+',
       note: 'since 2021, professionally',
       detail:
-        'Shipping since 2021: chatbot APIs in C# and .NET at Take Blip, freelance full-stack work, then platform engineering at Thinklogic. Before that, two years of IT support learning how systems fail.',
+        'Shipping since 2021: chatbot APIs in C# and .NET at Take Blip handling 3,000 interactions a minute, freelance full-stack work across five sites, then platform engineering at Thinklogic. Before any of it, two years of IT support — servers, networks, and the habit of staying calm while something is broken.',
     },
     {
       label: 'Pages migrated',
@@ -80,7 +86,7 @@ export const profile = {
       value: '40',
       note: 'in 21 days, nine days early',
       detail:
-        'A CMS redesign and migration against a hard, non-negotiable deadline. I led a two-person team and used AI tooling throughout the workflow, and we finished nine days ahead of it.',
+        'A CMS redesign and migration against a hard, non-negotiable deadline. I led a two-person team and built AI tooling into the workflow rather than around it, and we finished nine days ahead. The schedule held because the repetitive work was automated and the review was not.',
       href: 'https://www.jndla.com/',
       hrefLabel: 'jndla.com',
     },
@@ -90,7 +96,7 @@ export const profile = {
       value: 'ALL',
       note: 'in days, not quarters',
       detail:
-        'An automated CMS translation pipeline built on Google Gemini. It cleared a translation backlog across every international locale in days — work that had been measured in quarters.',
+        'An automated CMS translation pipeline built on Google Gemini. It cleared a translation backlog across every international locale in days — work that had been measured in quarters. The engineering was not the model call; it was the schema validation, the review gate, and the deterministic fallback behind it.',
       href: 'https://www.exemplars.health/',
       hrefLabel: 'exemplars.health',
     },

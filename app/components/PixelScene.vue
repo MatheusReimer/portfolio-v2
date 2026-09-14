@@ -108,7 +108,8 @@ onBeforeUnmount(() => {
       :style="{ backgroundImage: `url(&quot;${layers.near}&quot;)`, transform: `translateY(${shift * 1.4}px)` }"
     />
 
-    <!-- Stars stay as nodes: CSS animates each one on its own offset. -->
+    <!-- Stars and traffic stay as nodes: CSS animates them, and sharing the
+         scene's viewBox keeps them aligned to the skyline at any size. -->
     <svg
       class="scene__stars"
       :viewBox="`0 0 ${scene.width} ${scene.height}`"
@@ -128,6 +129,10 @@ onBeforeUnmount(() => {
         :fill="r.f"
         :style="{ animationDelay: `${r.t}ms` }"
       />
+
+      <!-- Sky and street traffic share this coordinate space, so they sit in
+           the city rather than on top of it. -->
+      <SceneTraffic v-if="variant === 'full'" />
     </svg>
 
     <div class="scene__scrim" />
