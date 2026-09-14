@@ -4,6 +4,8 @@ import PixelDissolve from '../app/components/PixelDissolve.vue'
 import PixelMeter from '../app/components/PixelMeter.vue'
 import PixelCarousel from '../app/components/PixelCarousel.vue'
 import StatInventory from '../app/components/StatInventory.vue'
+import PixelRocket from '../app/components/PixelRocket.vue'
+import { rocket as rocketSprite, flameFrames } from '../app/data/sprites'
 import { profile } from '../app/data/profile'
 import { techSprites, techIcon, toMono } from '../app/data/techSprites'
 import type { Sprite } from '../app/data/sprites'
@@ -228,5 +230,56 @@ describe('StatInventory', () => {
     expect(wrapper.findAll('.slot').at(-1)!.classes()).toContain('is-active')
     await wrapper.findAll('.slot').at(-1)!.trigger('keydown.right')
     expect(wrapper.findAll('.slot')[0]!.classes()).toContain('is-active')
+  })
+})
+
+describe('rocket sprites', () => {
+  it('is a 16x24 grid', () => {
+    expect(rocketSprite.rows).toHaveLength(24)
+    for (const row of rocketSprite.rows) expect(row).toHaveLength(16)
+  })
+
+  it('has three flame frames, all the same size', () => {
+    expect(flameFrames).toHaveLength(3)
+    for (const f of flameFrames) {
+      expect(f.rows).toHaveLength(8)
+      for (const row of f.rows) expect(row).toHaveLength(16)
+    }
+  })
+
+  it('draws flames of differing length, so the cycle actually flickers', () => {
+    const lit = flameFrames.map(f => f.rows.filter(r => r.trim().replace(/\./g, '')).length)
+    expect(new Set(lit).size).toBeGreaterThan(1)
+  })
+
+  it('only uses characters its palette defines', () => {
+    for (const sprite of [rocketSprite, ...flameFrames]) {
+      const known = new Set([...Object.keys(sprite.palette), '.'])
+      for (const row of sprite.rows) {
+        for (const ch of row) expect(known).toContain(ch)
+      }
+    }
+  })
+})
+
+describe('PixelRocket', () => {
+  const mountRocket = () =>
+    mount(PixelRocket, { global: { stubs: { PixelSprite: true } } })
+
+  it('is decorative and never announced', () => {
+    expect(mountRocket().attributes('aria-hidden')).toBe('true')
+  })
+
+  it('renders every flame frame, staggered', () => {
+    const frames = mountRocket().findAll('.rocket__frame')
+    expect(frames).toHaveLength(3)
+    const delays = frames.map(f => f.attributes('style'))
+    expect(new Set(delays).size).toBe(3)
+  })
+
+  it('starts unlit and grounded', () => {
+    const wrapper = mountRocket()
+    expect(wrapper.classes()).not.toContain('is-burning')
+    expect(wrapper.attributes('style')).toContain('translateY(0px)')
   })
 })

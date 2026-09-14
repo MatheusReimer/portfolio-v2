@@ -11,6 +11,9 @@ export interface Stat {
   note: string
   /** Short caption for the inventory slot, where space is tight. */
   short: string
+  /** The context shown when the slot is selected. Every claim traceable to the
+      experience timeline — this is the line someone quotes back in an interview. */
+  detail: string
 }
 
 export interface Language {
@@ -36,10 +39,38 @@ export const profile = {
     'Software engineer specialising in front-end architecture, performance, and AI-assisted delivery with Nuxt.js and Vue.js — 400,000+ users, 35M+ requests monthly.',
 
   stats: [
-    { label: 'Unique users / mo', short: 'Users', value: '400K+', note: 'on the platform I architected' },
-    { label: 'Requests / mo', short: 'Requests', value: '35M+', note: 'served without downtime' },
-    { label: 'Pages at 90+', short: 'Lighthouse', value: '13K+', note: 'scoring 90+ post-migration' },
-    { label: 'Years shipping', short: 'Years', value: '5+', note: 'since 2021, professionally' },
+    {
+      label: 'Unique users / mo',
+      short: 'Users',
+      value: '400K+',
+      note: 'on the platform I architected',
+      detail:
+        'A global marketing platform. I designed and built the prefetched Nuxt.js architecture that replaced its legacy SPA, and every one of those users is served by it.',
+    },
+    {
+      label: 'Requests / mo',
+      short: 'Requests',
+      value: '35M+',
+      note: 'served without downtime',
+      detail:
+        'Handled through a zero-downtime migration off the old system. The new architecture removed backend load from ordinary page requests entirely, which is what made the volume survivable.',
+    },
+    {
+      label: 'Pages at 90+',
+      short: 'Lighthouse',
+      value: '13K+',
+      note: 'scoring 90+ post-migration',
+      detail:
+        'Lighthouse 90+ across more than thirteen thousand pages after the rebuild — not a hand-picked sample. Performance treated as an architecture problem rather than a tooling one.',
+    },
+    {
+      label: 'Years shipping',
+      short: 'Years',
+      value: '5+',
+      note: 'since 2021, professionally',
+      detail:
+        'Shipping since 2021: chatbot APIs in C# and .NET at Take Blip, freelance full-stack work, then platform engineering at Thinklogic. Before that, two years of IT support learning how systems fail.',
+    },
   ] satisfies Stat[],
 
   // Short, factual career narrative. First person, no embellishment.

@@ -302,8 +302,102 @@ export const badge = icon([
   'OOOOOOOO',
 ])
 
+/* --- Rocket ---------------------------------------------------------------
+   A 16x24 booster, lit from the left: the two right-hand columns of the hull
+   are a darker tone so the body reads as a cylinder rather than a rectangle.
+   Three flame frames cycle underneath it.
+   ---------------------------------------------------------------------- */
+
+const ROCKET = {
+  O: '#e8ebff', // hull, lit side
+  D: '#7b83b8', // hull, shadow side
+  W: '#4fd6c4', // window
+  F: '#ff7d6e', // fins
+  G: '#565e9c', // engine bell
+}
+
+export const rocket: Sprite = {
+  rows: [
+    '.......OD.......',
+    '......OODD......',
+    '......OODD......',
+    '.....OOOODD.....',
+    '.....OWWWWD.....',
+    '.....OWWWWD.....',
+    '.....OOOODD.....',
+    '.....OOOODD.....',
+    '....OOOOOODD....',
+    '....OOOOOODD....',
+    '....OOOOOODD....',
+    '....OOOOOODD....',
+    '....OOOOOODD....',
+    '....OOOOOODD....',
+    '...FOOOOOODDF...',
+    '..FFOOOOOODDFF..',
+    '.FFFOOOOOODDFFF.',
+    'FFFFOOOOOODDFFFF',
+    '....OOOOOODD....',
+    '....OGGGGGGD....',
+    '....OGGGGGGD....',
+    '.....GGGGGG.....',
+    '......GGGG......',
+    '................',
+  ],
+  palette: ROCKET,
+}
+
+const FLAME = {
+  W: '#fff3c4', // white hot core
+  Y: '#ffc53d', // gold
+  O: '#ff7d6e', // coral tip
+}
+
+/** Three exhaust frames, cycled in hard steps — fire does not cross-fade. */
+export const flameFrames: Sprite[] = [
+  {
+    rows: [
+      '.....YWWWWY.....',
+      '.....YWWWWY.....',
+      '......YYYY......',
+      '......OOOO......',
+      '.......OO.......',
+      '................',
+      '................',
+      '................',
+    ],
+    palette: FLAME,
+  },
+  {
+    rows: [
+      '.....YWWWWY.....',
+      '.....YWWWWY.....',
+      '.....YWWWWY.....',
+      '......YYYY......',
+      '......OOOO......',
+      '......OOOO......',
+      '.......OO.......',
+      '................',
+    ],
+    palette: FLAME,
+  },
+  {
+    rows: [
+      '.....YWWWWY.....',
+      '......YYYY......',
+      '......OOOO......',
+      '.......OO.......',
+      '................',
+      '................',
+      '................',
+      '................',
+    ],
+    palette: FLAME,
+  },
+]
+
 export const sprites = {
   avatar,
+  rocket,
   avatarBlink,
   mail,
   arrow,

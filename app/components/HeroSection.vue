@@ -6,6 +6,7 @@ import { avatar, avatarBlink, mail, pin, socialIcons, terminal } from '~/data/sp
 <template>
   <section id="top" class="hero">
     <PixelScene />
+    <PixelRocket />
 
     <div class="px-shell hero__content">
       <div class="hero__grid">
@@ -240,7 +241,7 @@ import { avatar, avatarBlink, mail, pin, socialIcons, terminal } from '~/data/sp
   /* The window casts an 8px shadow; leave room for it. */
   padding-right: var(--px2);
   padding-bottom: var(--px2);
-  max-width: 560px;
+  max-width: 580px;
 }
 
 @media (max-width: 720px) {

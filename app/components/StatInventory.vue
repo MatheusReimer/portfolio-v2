@@ -71,6 +71,7 @@ const focusTab = (index: number) => {
           {{ stat.label }}
         </p>
         <p class="readout__note">{{ stat.value }} — {{ stat.note }}</p>
+        <p class="readout__detail">{{ stat.detail }}</p>
       </div>
     </div>
   </PixelWindow>
@@ -169,8 +170,9 @@ const focusTab = (index: number) => {
   margin-top: var(--px3);
   padding-top: var(--px3);
   border-top: var(--px) solid var(--c-line);
-  /* Reserve the taller of the two lines so selecting does not jog the layout. */
-  min-height: 60px;
+  /* Reserve room for the longest readout so selecting a slot does not jog the
+     rest of the hero up and down. */
+  min-height: 150px;
 }
 
 .readout__name {
@@ -189,9 +191,16 @@ const focusTab = (index: number) => {
 
 .readout__note {
   font-size: 13px;
-  color: var(--c-dim);
+  color: var(--c-accent);
   line-height: 1.5;
   margin-top: 2px;
+}
+
+.readout__detail {
+  font-size: 13px;
+  color: var(--c-dim);
+  line-height: 1.6;
+  margin-top: var(--px2);
 }
 
 @media (max-width: 560px) {
