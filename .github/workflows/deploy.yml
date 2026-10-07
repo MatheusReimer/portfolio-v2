@@ -15,16 +15,17 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Gate the deploy on lint, types, and tests so a broken link or a failed
-  # type check cannot reach the live site.
-  verify:
+  # Lint, types, unit tests, a production build and the end-to-end suite all
+  # have to pass before anything reaches the live site. The e2e run tests the
+  # exact static files that get uploaded.
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -35,28 +36,21 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Test
+      - name: Unit tests
         run: npm test
 
-  build:
-    needs: verify
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Build static site
+        run: npm run build
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
 
-      - run: npm ci
-
-      - name: Generate static site
-        run: npm run generate
+      - name: End-to-end tests
+        run: npm run test:e2e
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./.output/public
+          path: ./out
 
   deploy:
     needs: build

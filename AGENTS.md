@@ -1,33 +1,32 @@
 # Working on this repo
 
-Static Nuxt 4 portfolio deployed to GitHub Pages under `/portfolio-v2/`.
+Static Next.js portfolio deployed to GitHub Pages under `/portfolio-v2/`.
 
 ## Ground rules
 
-- **Content lives in `app/data/*.ts`.** Copy changes go there, never hardcoded
-  into components. The tests enforce shape (no empty fields, https-only links,
-  reverse-chronological roles).
-- **No game vocabulary.** This site replaced a card-game-themed portfolio. A
-  test fails the build if terms like "duel", "boss", or "grimoire" reappear in
-  the content.
-- **Pixel type for headings and labels only.** Running prose is Inter. Pixel
-  faces below ~16px stop being legible.
-- **Everything is a multiple of `--px` (4px).** No `border-radius`, no blurred
-  shadows, no smooth easing — use `steps()`.
-- **Outbound links go through `ExternalLink.vue`** so `rel="noopener noreferrer"`
+- **Content lives in `src/data/*.ts`.** Copy changes go there, never hardcoded
+  into components. Tests enforce the shape: no empty fields, https-only links,
+  newest role first, no em dashes.
+- **Client work is evidence-based.** Every claim in `src/data/work.ts` must be
+  backed by the author's own commits. Link public sites only: never private
+  repository URLs, staging hosts, environment IDs or client data. A test fails
+  on `dev.azure.com`, staging and localhost hosts.
+- **Outbound links go through `ExternalLink`** so `rel="noopener noreferrer"`
   can't be forgotten. Don't hand-roll `target="_blank"`.
-- **No `v-html`.** A test enforces this.
+- **No `dangerouslySetInnerHTML`** outside the fixed boot script in
+  `src/app/layout.tsx`. A test enforces this.
+- **Animation is progressive enhancement.** The server-rendered page must be
+  complete and readable without JavaScript and with reduced motion. The e2e
+  suite checks both.
 
 ## Before pushing
 
-`npm run lint && npm run typecheck && npm test && npm run generate`
+`npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e`
 
-CI runs the same three gates before it will deploy.
+CI runs the same gates before it deploys.
 
-## Nuxt 4 notes
+## Next.js notes
 
-- `app/` is the source directory; `~` and `@` resolve to it.
-- Do not add `vue` or `vue-router` to package.json — Nuxt pins compatible
-  versions itself, and overriding them breaks `vue-tsc`.
-- The root `tsconfig.json` only holds project references to `.nuxt/tsconfig.*`.
-  Run `nuxt prepare` if those go missing.
+- Static export: no API routes, no server actions, no `next/image` optimisation.
+- `basePath` is `/portfolio-v2`; in-page links use `#id` and need no prefix.
+- Next 16 removed `next lint`; ESLint runs directly with `eslint-config-next`.

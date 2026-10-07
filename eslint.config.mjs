@@ -1,4 +1,10 @@
-// @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
 
-export default withNuxt()
+const config = [
+  ...nextVitals,
+  ...nextTs,
+  { ignores: ['.next/**', 'out/**', 'next-env.d.ts', 'playwright-report/**', 'test-results/**'] },
+]
+
+export default config
