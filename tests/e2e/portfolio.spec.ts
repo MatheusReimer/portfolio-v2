@@ -4,6 +4,7 @@ import { liveSites } from '../../src/data/live'
 import { profile } from '../../src/data/profile'
 import { projects } from '../../src/data/projects'
 import { work } from '../../src/data/work'
+import { getContent } from '../../src/i18n/content'
 
 const SECTIONS = ['live', 'work', 'projects', 'experience', 'stack', 'about', 'contact']
 
@@ -121,5 +122,66 @@ test.describe('without JavaScript', () => {
     await expect(page.getByText(profile.tagline)).toBeVisible()
     await page.locator('section#contact').scrollIntoViewIfNeeded()
     await expect(page.getByRole('link', { name: profile.email })).toBeVisible()
+  })
+})
+
+const LANGUAGES = [
+  { path: './', lang: 'en', name: 'English', live: 'Live in production', contact: 'Contact' },
+  { path: './pt/', lang: 'pt-BR', name: 'Português', live: 'Em produção', contact: 'Contato' },
+  { path: './de/', lang: 'de', name: 'Deutsch', live: 'Live in Produktion', contact: 'Kontakt' },
+]
+
+test.describe('languages', () => {
+  for (const l of LANGUAGES) {
+    test(`${l.lang} page is fully translated and fits the screen`, async ({ page }) => {
+      const errors: string[] = []
+      page.on('pageerror', (e) => errors.push(e.message))
+      await page.goto(l.path)
+      await expect(page.locator('html')).toHaveAttribute('lang', l.lang)
+      await expect(page.getByRole('heading', { level: 1, name: profile.name })).toBeVisible()
+      await expect(page.getByRole('heading', { level: 2, name: l.live, exact: true })).toBeAttached()
+      await expect(page.getByRole('heading', { level: 2, name: l.contact, exact: true })).toBeAttached()
+      await expect(page.getByRole('link', { name: l.name })).toHaveAttribute('aria-current', 'page')
+      for (const p of work) await expect(page.getByRole('heading', { name: p.client, exact: true })).toBeAttached()
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+      expect(overflow).toBe(0)
+      expect(errors).toEqual([])
+    })
+  }
+
+  test('the switcher moves between languages', async ({ page }) => {
+    await page.goto('./')
+    const switcher = page.getByRole('navigation', { name: 'Language' })
+    await switcher.getByRole('link', { name: 'Português' }).click()
+    await expect(page).toHaveURL(/\/portfolio-v2\/pt\/$/)
+    await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR')
+
+    await page.getByRole('navigation', { name: 'Idioma' }).getByRole('link', { name: 'Deutsch' }).click()
+    await expect(page).toHaveURL(/\/portfolio-v2\/de\/$/)
+    await expect(page.locator('html')).toHaveAttribute('lang', 'de')
+
+    await page.getByRole('navigation', { name: 'Sprache' }).getByRole('link', { name: 'English' }).click()
+    await expect(page).toHaveURL(/\/portfolio-v2\/$/)
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+  })
+
+  test('unknown pages get the styled 404 with links home', async ({ page }) => {
+    const response = await page.goto('./nope/')
+    expect(response?.status()).toBe(404)
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+    await expect(page.getByRole('heading', { name: /404/ })).toBeVisible()
+    await page.getByRole('link', { name: /Deutsch/ }).click()
+    await expect(page.locator('html')).toHaveAttribute('lang', 'de')
+  })
+})
+
+test.describe('languages without JavaScript', () => {
+  test.use({ javaScriptEnabled: false })
+
+  test('the switcher works as plain links', async ({ page }) => {
+    await page.goto('./')
+    await page.getByRole('link', { name: 'Deutsch' }).click()
+    await expect(page.locator('html')).toHaveAttribute('lang', 'de')
+    await expect(page.getByText(getContent('de').profile.tagline)).toBeVisible()
   })
 })

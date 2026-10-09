@@ -302,6 +302,52 @@ a:hover {
   }
 }
 
+.lang-switch {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 2px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.lang-switch a {
+  display: block;
+  padding: 4px 7px;
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+.lang-switch a:hover {
+  color: var(--text-strong);
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+.lang-switch a[aria-current='page'] {
+  color: var(--text-strong);
+  background: var(--accent-dim);
+}
+
+.header-inner > nav:last-child {
+  flex-shrink: 0;
+}
+
+.not-found {
+  padding: 96px 0;
+}
+
+.not-found-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 20px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 14px;
+}
+
 /* -------------------------------------------------------------------- hero */
 
 .hero {

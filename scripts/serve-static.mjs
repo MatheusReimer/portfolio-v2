@@ -44,7 +44,7 @@ createServer(async (req, res) => {
   const file = await resolveFile(path)
   try {
     const body = await readFile(file ?? join(ROOT, '404.html'))
-    res.writeHead(file ? 200 : 404, { 'Content-Type': TYPES[extname(file ?? '.html')] ?? 'application/octet-stream' })
+    res.writeHead(file ? 200 : 404, { 'Content-Type': TYPES[extname(file ?? '404.html')] ?? 'application/octet-stream' })
     res.end(body)
   } catch {
     res.writeHead(404).end('Not found')

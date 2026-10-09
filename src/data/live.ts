@@ -1,6 +1,6 @@
 import { displayHost } from '@/components/ExternalLink'
-import { projects } from './projects'
-import { work } from './work'
+import { projects as baseProjects, type SideProject } from './projects'
+import { work as baseWork, type ClientProject } from './work'
 
 /**
  * Everything I worked on that a visitor can open right now.
@@ -19,13 +19,17 @@ export interface LiveSite {
   kind: 'client' | 'personal'
 }
 
-export const liveSites: LiveSite[] = [
-  ...work.flatMap((p): LiveSite[] =>
-    p.url ? [{ id: p.id, name: p.client, url: p.url, label: displayHost(p.url), blurb: p.product, kind: 'client' }] : [],
-  ),
-  ...projects.flatMap((p): LiveSite[] =>
-    p.site
-      ? [{ id: p.id, name: p.name, url: p.site, label: p.siteLabel ?? displayHost(p.site), blurb: p.summary, kind: 'personal' }]
-      : [],
-  ),
-]
+export function buildLiveSites(work: ClientProject[], projects: SideProject[]): LiveSite[] {
+  return [
+    ...work.flatMap((p): LiveSite[] =>
+      p.url ? [{ id: p.id, name: p.client, url: p.url, label: displayHost(p.url), blurb: p.product, kind: 'client' }] : [],
+    ),
+    ...projects.flatMap((p): LiveSite[] =>
+      p.site
+        ? [{ id: p.id, name: p.name, url: p.site, label: p.siteLabel ?? displayHost(p.site), blurb: p.summary, kind: 'personal' }]
+        : [],
+    ),
+  ]
+}
+
+export const liveSites = buildLiveSites(baseWork, baseProjects)

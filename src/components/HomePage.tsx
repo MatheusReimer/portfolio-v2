@@ -11,11 +11,41 @@ import {
 } from '@/components/Sections'
 import { TerminalHero } from '@/components/TerminalHero'
 import { WaveBackdrop } from '@/components/WaveBackdrop'
-import { profile } from '@/data/profile'
+import { getContent } from '@/i18n/content'
+import { localeInfo, localeHref, locales, type Locale } from '@/i18n/locales'
 
 const NAV = ['live', 'work', 'projects', 'experience', 'stack', 'about', 'contact']
 
-export default function Home() {
+/** Plain links to each language's page, so switching works without JavaScript. */
+function LanguageSwitcher({ current, label }: { current: Locale; label: string }) {
+  return (
+    <nav aria-label={label}>
+      <ul className="lang-switch">
+        {locales.map((l) => {
+          const info = localeInfo[l]
+          return (
+            <li key={l}>
+              <a
+                href={localeHref(l)}
+                hrefLang={info.htmlLang}
+                lang={info.htmlLang}
+                aria-label={info.name}
+                aria-current={l === current ? 'page' : undefined}
+              >
+                {info.short}
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
+}
+
+export function HomePage({ locale }: { locale: Locale }) {
+  const c = getContent(locale)
+  const { ui, profile } = c
+
   return (
     <>
       <div className="backdrop" aria-hidden="true">
@@ -24,7 +54,7 @@ export default function Home() {
         <WaveBackdrop />
       </div>
       <a href="#main" className="skip-link">
-        Skip to content
+        {ui.skipToContent}
       </a>
       <header className="site-header">
         <div className="wrap header-inner">
@@ -32,7 +62,7 @@ export default function Home() {
             <span className="accent">{profile.handle}</span>
             <span className="muted">@reimer:~$</span>
           </a>
-          <nav aria-label="Sections">
+          <nav aria-label={ui.sectionsNav}>
             <ul className="nav">
               {NAV.map((id) => (
                 <li key={id}>
@@ -46,18 +76,29 @@ export default function Home() {
               ))}
             </ul>
           </nav>
+          <LanguageSwitcher current={locale} label={ui.languageNav} />
         </div>
       </header>
 
       <main id="main" className="wrap">
         <div id="top" className="hero">
-          <TerminalHero />
+          <TerminalHero
+            copy={{
+              name: profile.name,
+              handle: profile.handle,
+              role: profile.role,
+              location: profile.location,
+              tagline: profile.tagline,
+              stats: profile.stats.map(({ value, label }) => ({ value, label })),
+              skip: ui.hero.skip,
+            }}
+          />
           <div className="hero-actions">
             <a href="#work" className="btn btn-primary">
-              View work
+              {ui.hero.viewWork}
             </a>
             <a href={`mailto:${profile.email}`} className="btn">
-              Email me
+              {ui.hero.emailMe}
             </a>
             <ExternalLink href={profile.socials[0].href} className="btn">
               GitHub ↗
@@ -66,13 +107,13 @@ export default function Home() {
           <p className="hero-summary">{profile.summary}</p>
         </div>
 
-        <LiveSection />
-        <WorkSection />
-        <ProjectsSection />
-        <ExperienceSection />
-        <StackSection />
-        <AboutSection />
-        <ContactSection />
+        <LiveSection c={c} />
+        <WorkSection c={c} />
+        <ProjectsSection c={c} />
+        <ExperienceSection c={c} />
+        <StackSection c={c} />
+        <AboutSection c={c} />
+        <ContactSection c={c} />
       </main>
 
       <footer className="site-footer">
@@ -81,8 +122,7 @@ export default function Home() {
             © {new Date().getFullYear()} {profile.name}
           </p>
           <p>
-            Built with Next.js, React and TypeScript.{' '}
-            <ExternalLink href={profile.sourceUrl}>Source ↗</ExternalLink>
+            {ui.footer.builtWith} <ExternalLink href={profile.sourceUrl}>{ui.footer.source} ↗</ExternalLink>
           </p>
         </div>
       </footer>

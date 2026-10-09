@@ -1,7 +1,7 @@
 # portfolio-v2
 
 Personal portfolio for Matheus Reimer: a static Next.js site with a terminal-style
-design, deployed to GitHub Pages at <https://matheusreimer.github.io/portfolio-v2/>.
+design, in English, Portuguese and German, deployed to GitHub Pages at <https://matheusreimer.github.io/portfolio-v2/>.
 
 ## Stack
 
@@ -31,9 +31,11 @@ npm run typecheck
 
 ```
 src/
-  app/           layout (metadata, CSP, boot script), page, global styles, icon
-  components/    TerminalHero, Section, Sections, RevealController, ExternalLink
-  data/          all copy: profile, work, projects, experience, skills
+  app/           (en) and (intl)/[locale] root layouts, global 404, styles, icon
+  components/    RootDocument (metadata, CSP, boot script), HomePage, TerminalHero,
+                 Section, Sections, RevealController, ExternalLink
+  data/          English copy: profile, work, projects, experience, skills
+  i18n/          locales, Portuguese and German translations, content resolver
 tests/
   unit/          content shape, no leaked client infrastructure, source guards
   e2e/           real-browser checks on desktop and mobile

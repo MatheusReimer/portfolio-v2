@@ -1,9 +1,6 @@
-import { experience } from '@/data/experience'
-import { liveSites } from '@/data/live'
-import { profile } from '@/data/profile'
-import { projects } from '@/data/projects'
-import { skills } from '@/data/skills'
-import { work, type ClientProject } from '@/data/work'
+import type { ClientProject } from '@/data/work'
+import { formatPeriod, type Content } from '@/i18n/content'
+import type { UiMessages } from '@/i18n/types'
 import { ExternalLink, displayHost } from './ExternalLink'
 import { Section } from './Section'
 
@@ -29,28 +26,29 @@ function Bullets({ items }: { items: string[] }) {
   )
 }
 
-function ClientMeta({ project }: { project: ClientProject }) {
+function ClientMeta({ project, ui }: { project: ClientProject; ui: UiMessages }) {
   return (
     <p className="card-meta">
       <span className="accent">{project.role}</span>
       <span className="sep">/</span>
-      {project.period}
+      {formatPeriod(ui, project.start, project.end)}
     </p>
   )
 }
 
-export function LiveSection() {
+export function LiveSection({ c }: { c: Content }) {
+  const { ui } = c
   return (
-    <Section id="live" command="ls deployments/ --status=live" title="Live in production">
-      <p className="lede">Sites I built or helped build that are running today. Open any of them.</p>
-      <ul className="live-rail" aria-label="Live sites">
-        {liveSites.map((s) => (
+    <Section id="live" command="ls deployments/ --status=live" title={ui.live.title}>
+      <p className="lede">{ui.live.lede}</p>
+      <ul className="live-rail" aria-label={ui.live.listLabel}>
+        {c.liveSites.map((s) => (
           <li key={s.id}>
             <ExternalLink href={s.url} className="live-card" label={`${s.name}, ${s.label}`}>
               <span className="live-status">
                 <span className="status-dot" aria-hidden="true" />
                 live<span className="sep">/</span>
-                {s.kind}
+                {ui.live[s.kind]}
               </span>
               <span className="live-name">{s.name}</span>
               <span className="live-blurb">{s.blurb}</span>
@@ -63,22 +61,20 @@ export function LiveSection() {
   )
 }
 
-export function WorkSection() {
-  const featured = work.find((p) => p.featured)
-  const rest = work.filter((p) => !p.featured)
+export function WorkSection({ c }: { c: Content }) {
+  const { ui } = c
+  const featured = c.work.find((p) => p.featured)
+  const rest = c.work.filter((p) => !p.featured)
 
   return (
-    <Section id="work" command="ls clients/ --sort=impact" title="Client work">
-      <p className="lede">
-        Platforms I built and shipped at Thinklogic. Every line below is backed by my own commits in the client
-        repository.
-      </p>
+    <Section id="work" command="ls clients/ --sort=impact" title={ui.work.title}>
+      <p className="lede">{ui.work.lede}</p>
 
       {featured && (
         <article className="card featured" aria-labelledby={`${featured.id}-name`}>
           <div className="card-head">
             <div>
-              <p className="card-kicker">featured case study</p>
+              <p className="card-kicker">{ui.work.featured}</p>
               <h3 id={`${featured.id}-name`} className="card-title">
                 {featured.client}
               </h3>
@@ -90,9 +86,9 @@ export function WorkSection() {
               </ExternalLink>
             )}
           </div>
-          <ClientMeta project={featured} />
+          <ClientMeta project={featured} ui={ui} />
           <dl className="metric-row">
-            {profile.stats.slice(0, 3).map((s) => (
+            {c.profile.stats.slice(0, 3).map((s) => (
               <div key={s.label} className="metric">
                 <dt>{s.label}</dt>
                 <dd>{s.value}</dd>
@@ -100,7 +96,7 @@ export function WorkSection() {
             ))}
           </dl>
           <Bullets items={featured.highlights} />
-          <Chips items={featured.stack} label={`${featured.client} stack`} />
+          <Chips items={featured.stack} label={ui.labels.stack(featured.client)} />
         </article>
       )}
 
@@ -119,12 +115,12 @@ export function WorkSection() {
                   {displayHost(p.url)} ↗
                 </ExternalLink>
               ) : (
-                <span className="visit is-private">internal system</span>
+                <span className="visit is-private">{ui.work.internal}</span>
               )}
             </div>
-            <ClientMeta project={p} />
+            <ClientMeta project={p} ui={ui} />
             <Bullets items={p.highlights} />
-            <Chips items={p.stack} label={`${p.client} stack`} />
+            <Chips items={p.stack} label={ui.labels.stack(p.client)} />
           </article>
         ))}
       </div>
@@ -132,12 +128,13 @@ export function WorkSection() {
   )
 }
 
-export function ProjectsSection() {
+export function ProjectsSection({ c }: { c: Content }) {
+  const { ui } = c
   return (
-    <Section id="projects" command="ls side-projects/" title="Personal projects">
-      <p className="lede">Things I build on my own time, mostly to try a stack properly rather than read about it.</p>
+    <Section id="projects" command="ls side-projects/" title={ui.projects.title}>
+      <p className="lede">{ui.projects.lede}</p>
       <div className="grid">
-        {projects.map((p) => (
+        {c.projects.map((p) => (
           <article key={p.id} className="card" aria-labelledby={`${p.id}-name`}>
             <div className="card-head">
               <div>
@@ -149,21 +146,21 @@ export function ProjectsSection() {
               {(p.repo || p.site) && (
                 <div className="visit-links">
                   {p.site && (
-                    <ExternalLink href={p.site} className="visit" label={`${p.name} live site`}>
+                    <ExternalLink href={p.site} className="visit" label={ui.labels.liveSite(p.name)}>
                       {p.siteLabel ?? displayHost(p.site)} ↗
                     </ExternalLink>
                   )}
                   {p.repo && (
-                    <ExternalLink href={p.repo} className="visit" label={`${p.name} source code on GitHub`}>
-                      source ↗
+                    <ExternalLink href={p.repo} className="visit" label={ui.labels.sourceCode(p.name)}>
+                      {ui.projects.source} ↗
                     </ExternalLink>
                   )}
                 </div>
               )}
-              {!p.repo && !p.site && <span className="visit is-private">private repo</span>}
+              {!p.repo && !p.site && <span className="visit is-private">{ui.projects.privateRepo}</span>}
             </div>
             <Bullets items={p.highlights} />
-            <Chips items={p.stack} label={`${p.name} stack`} />
+            <Chips items={p.stack} label={ui.labels.stack(p.name)} />
           </article>
         ))}
       </div>
@@ -178,21 +175,22 @@ function shortHash(seed: string): string {
   return (h >>> 0).toString(16).padStart(8, '0').slice(0, 7)
 }
 
-export function ExperienceSection() {
+export function ExperienceSection({ c }: { c: Content }) {
+  const { ui } = c
   return (
-    <Section id="experience" command="git log --career" title="Experience">
+    <Section id="experience" command="git log --career" title={ui.experience.title}>
       <ol className="log">
-        {experience.map((r, i) => (
+        {c.experience.map((r, i) => (
           <li key={r.id} className="log-entry">
             <p className="log-hash" aria-hidden="true">
               commit {shortHash(r.id)}
               {i === 0 && <span className="log-head"> (HEAD → main)</span>}
             </p>
             <h3 className="log-title">
-              {r.role} <span className="muted">at</span> {r.company}
+              {r.role} <span className="muted">{ui.experience.at}</span> {r.company}
             </h3>
             <p className="card-meta">
-              {r.period}
+              {formatPeriod(ui, r.start, r.end)}
               <span className="sep">/</span>
               {r.location}
             </p>
@@ -205,11 +203,11 @@ export function ExperienceSection() {
   )
 }
 
-export function StackSection() {
+export function StackSection({ c }: { c: Content }) {
   return (
-    <Section id="stack" command="cat stack.toml" title="Stack">
+    <Section id="stack" command="cat stack.toml" title={c.ui.stack.title}>
       <div className="toml">
-        {skills.map((g) => (
+        {c.skills.map((g) => (
           <div key={g.id} className="toml-row">
             <p className="toml-key">[{g.label}]</p>
             <Chips items={g.items} label={g.label} />
@@ -220,9 +218,10 @@ export function StackSection() {
   )
 }
 
-export function AboutSection() {
+export function AboutSection({ c }: { c: Content }) {
+  const { ui, profile } = c
   return (
-    <Section id="about" command="cat about.md" title="About">
+    <Section id="about" command="cat about.md" title={ui.about.title}>
       <div className="about">
         <div className="prose">
           {profile.about.map((p) => (
@@ -230,7 +229,7 @@ export function AboutSection() {
           ))}
         </div>
         <aside className="about-side">
-          <p className="toml-key"># languages</p>
+          <p className="toml-key"># {ui.about.languages}</p>
           <dl className="langs">
             {profile.languages.map((l) => (
               <div key={l.name}>
@@ -253,9 +252,10 @@ export function AboutSection() {
   )
 }
 
-export function ContactSection() {
+export function ContactSection({ c }: { c: Content }) {
+  const { profile } = c
   return (
-    <Section id="contact" command="./contact --open" title="Contact">
+    <Section id="contact" command="./contact --open" title={c.ui.contact.title}>
       <p className="status">
         <span className="status-dot" aria-hidden="true" />
         {profile.availability}

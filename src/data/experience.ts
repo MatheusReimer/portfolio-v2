@@ -2,9 +2,10 @@ export interface Role {
   id: string
   company: string
   role: string
-  period: string
   /** YYYY-MM. Roles are listed newest first; a test enforces it. */
   start: string
+  /** YYYY-MM of the last month. Omitted while ongoing. */
+  end?: string
   location: string
   summary: string
   points: string[]
@@ -15,7 +16,6 @@ export const experience: Role[] = [
     id: 'thinklogic',
     company: 'Thinklogic',
     role: 'Software Engineer',
-    period: 'Mar 2023 → present',
     start: '2023-03',
     location: 'Remote, USA',
     summary:
@@ -31,8 +31,8 @@ export const experience: Role[] = [
     id: 'take-blip',
     company: 'Take Blip',
     role: 'Chatbot Developer',
-    period: 'Sep 2021 → Apr 2023',
     start: '2021-09',
+    end: '2023-04',
     location: 'Brazil',
     summary: 'Chatbots and backend APIs for enterprise clients in health, retail and finance.',
     points: [
@@ -46,8 +46,8 @@ export const experience: Role[] = [
     id: 'freelance',
     company: 'Freelance',
     role: 'Full-Stack Developer',
-    period: 'Feb 2021 → Sep 2021',
     start: '2021-02',
+    end: '2021-09',
     location: 'Brazil',
     summary: 'Designed, built and deployed five websites end to end in six months.',
     points: [
@@ -60,8 +60,8 @@ export const experience: Role[] = [
     id: 'grupo-gmaes',
     company: 'Grupo Gmaes',
     role: 'IT Intern',
-    period: 'Nov 2019 → Feb 2021',
     start: '2019-11',
+    end: '2021-02',
     location: 'Itajaí, Brazil',
     summary: 'IT support for Linux and Windows servers, networks and internal systems.',
     points: [

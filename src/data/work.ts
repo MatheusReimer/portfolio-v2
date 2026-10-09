@@ -13,9 +13,10 @@ export interface ClientProject {
   /** Public site. Omitted for internal systems. */
   url?: string
   role: string
-  period: string
-  /** Ordering key, YYYY-MM of when I started on it. */
+  /** YYYY-MM of when I started on it; also the ordering key. */
   start: string
+  /** YYYY-MM of the last month. Omitted while ongoing. */
+  end?: string
   stack: string[]
   highlights: string[]
   /** Shown as the expanded case study at the top of the section. */
@@ -29,7 +30,6 @@ export const work: ClientProject[] = [
     product: 'Marketing site and product catalog for a data-center hardware manufacturer',
     url: 'https://www.chatsworth.com',
     role: 'Lead developer',
-    period: 'Sep 2024 → present',
     start: '2024-09',
     stack: ['Nuxt', 'Vue', 'TypeScript', 'Kontent.ai', 'Algolia', 'Cloudflare', 'Azure', 'C#'],
     featured: true,
@@ -47,7 +47,6 @@ export const work: ClientProject[] = [
     product: 'Marketing site and per-case information sites for a legal administration firm',
     url: 'https://www.jndla.com',
     role: 'Primary developer, built from the first commit',
-    period: 'Jan 2026 → present',
     start: '2026-01',
     stack: ['Nuxt 4', 'Kontent.ai', 'Azure Static Web Apps', 'Azure Functions', 'Bicep'],
     highlights: [
@@ -63,8 +62,8 @@ export const work: ClientProject[] = [
     product: 'Public-health research platform for a Gates Ventures program',
     url: 'https://www.exemplars.health',
     role: 'Top contributor',
-    period: 'Apr 2024 → May 2026',
     start: '2024-04',
+    end: '2026-05',
     stack: ['Nuxt', 'Kontent.ai', 'Azure AI Search', 'D3', 'Cloudflare'],
     highlights: [
       'Main developer on the move to Nuxt and Kontent.ai: narratives, case studies, key learnings and data-evidence blocks.',
@@ -78,8 +77,8 @@ export const work: ClientProject[] = [
     product: 'Website for a national law and consulting firm',
     url: 'https://www.manatt.com',
     role: 'Top contributor',
-    period: 'Jul 2024 → May 2026',
     start: '2024-07',
+    end: '2026-05',
     stack: ['Nuxt', 'Kontent.ai', 'Azure AI Search', 'Azure CDN', 'OpenTelemetry'],
     highlights: [
       'Built site-wide fuzzy search on Azure AI Search, with index rebuilds and filters.',
@@ -93,7 +92,6 @@ export const work: ClientProject[] = [
     product: "Research-data platform for Alzheimer's disease",
     url: 'https://www.alzheimersdata.org',
     role: 'Developer',
-    period: 'Mar 2025 → present',
     start: '2025-03',
     stack: ['Nuxt 4', 'Kontent.ai', 'Azure Static Web Apps'],
     highlights: [
@@ -106,8 +104,8 @@ export const work: ClientProject[] = [
     client: 'The Ticket Clinic',
     product: 'Headlight, an internal case-management system for a traffic-law firm',
     role: 'Full-stack developer',
-    period: 'Apr 2023 → Jun 2024',
     start: '2023-04',
+    end: '2024-06',
     stack: ['C#', '.NET', 'EF Core', 'SQL Server', 'Angular'],
     highlights: [
       'Built the reporting suite end to end: a dashboard and eight operational reports with PDF output, from .NET report services to the Angular UI.',
@@ -121,8 +119,8 @@ export const work: ClientProject[] = [
     product: 'Local news site for Long Beach',
     url: 'https://www.insidelbnews.com',
     role: 'Contributor',
-    period: 'Aug 2025',
     start: '2025-08',
+    end: '2025-08',
     stack: ['Nuxt', 'Kontent.ai'],
     highlights: ['Added JSON-LD structured data, canonical URLs and Lighthouse fixes for search visibility.'],
   },

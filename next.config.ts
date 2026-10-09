@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next'
 
-// GitHub Pages serves this project site from /portfolio-v2/.
-export const BASE_PATH = '/portfolio-v2'
+import { BASE_PATH } from './src/site'
 
 const config: NextConfig = {
   output: 'export',
@@ -10,6 +9,8 @@ const config: NextConfig = {
   images: { unoptimized: true },
   reactStrictMode: true,
   poweredByHeader: false,
+  // Each locale has its own root layout, so the 404 page needs its own document.
+  experimental: { globalNotFound: true },
 }
 
 export default config
