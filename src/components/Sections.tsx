@@ -46,7 +46,7 @@ export function LiveSection() {
       <ul className="live-rail" aria-label="Live sites">
         {liveSites.map((s) => (
           <li key={s.id}>
-            <ExternalLink href={s.url} className="live-card" label={`${s.name}, ${displayHost(s.url)}`}>
+            <ExternalLink href={s.url} className="live-card" label={`${s.name}, ${s.label}`}>
               <span className="live-status">
                 <span className="status-dot" aria-hidden="true" />
                 live<span className="sep">/</span>
@@ -54,7 +54,7 @@ export function LiveSection() {
               </span>
               <span className="live-name">{s.name}</span>
               <span className="live-blurb">{s.blurb}</span>
-              <span className="live-host">{displayHost(s.url)} ↗</span>
+              <span className="live-host">{s.label} ↗</span>
             </ExternalLink>
           </li>
         ))}
@@ -149,8 +149,8 @@ export function ProjectsSection() {
               {(p.repo || p.site) && (
                 <div className="visit-links">
                   {p.site && (
-                    <ExternalLink href={p.site} className="visit">
-                      {displayHost(p.site)} ↗
+                    <ExternalLink href={p.site} className="visit" label={`${p.name} live site`}>
+                      {p.siteLabel ?? displayHost(p.site)} ↗
                     </ExternalLink>
                   )}
                   {p.repo && (

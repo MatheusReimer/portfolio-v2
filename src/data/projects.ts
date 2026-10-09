@@ -7,6 +7,8 @@ export interface SideProject {
   highlights: string[]
   repo?: string
   site?: string
+  /** Link text for `site` when its host is not worth showing, e.g. a raw cloud URL. */
+  siteLabel?: string
 }
 
 export const projects: SideProject[] = [
@@ -20,6 +22,9 @@ export const projects: SideProject[] = [
       'Monorepo with a typed API, infrastructure as code, and tests on the CDK templates.',
     ],
     repo: 'https://github.com/MatheusReimer/extropy-ledger',
+    // Served from API Gateway until the account can create a CloudFront distribution.
+    site: 'https://k7dptwm6x7.execute-api.us-east-1.amazonaws.com',
+    siteLabel: 'live app',
   },
   {
     id: 'mtg-oracle',
@@ -42,7 +47,7 @@ export const projects: SideProject[] = [
       'Pulls catalog data from several public media APIs with fallbacks between them.',
     ],
     repo: 'https://github.com/MatheusReimer/RENA',
-    // Live at https://rena.reviews once the domain is restored (suspended as of Oct 2026); add `site` then.
+    site: 'https://rena.reviews',
   },
   {
     id: 'trama-fina',
