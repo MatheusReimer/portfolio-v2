@@ -42,6 +42,7 @@ export const projects: SideProject[] = [
       'Pulls catalog data from several public media APIs with fallbacks between them.',
     ],
     repo: 'https://github.com/MatheusReimer/RENA',
+    // Live at https://rena.reviews once the domain is restored (suspended as of Oct 2026); add `site` then.
   },
   {
     id: 'trama-fina',

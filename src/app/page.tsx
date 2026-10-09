@@ -4,6 +4,7 @@ import {
   AboutSection,
   ContactSection,
   ExperienceSection,
+  LiveSection,
   ProjectsSection,
   StackSection,
   WorkSection,
@@ -12,7 +13,7 @@ import { TerminalHero } from '@/components/TerminalHero'
 import { WaveBackdrop } from '@/components/WaveBackdrop'
 import { profile } from '@/data/profile'
 
-const NAV = ['work', 'projects', 'experience', 'stack', 'about', 'contact']
+const NAV = ['live', 'work', 'projects', 'experience', 'stack', 'about', 'contact']
 
 export default function Home() {
   return (
@@ -65,6 +66,7 @@ export default function Home() {
           <p className="hero-summary">{profile.summary}</p>
         </div>
 
+        <LiveSection />
         <WorkSection />
         <ProjectsSection />
         <ExperienceSection />

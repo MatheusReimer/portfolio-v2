@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { experience } from '@/data/experience'
+import { liveSites } from '@/data/live'
 import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { skills } from '@/data/skills'
@@ -63,6 +64,21 @@ describe('content', () => {
   it('links personal projects only to public GitHub repos or their own site', () => {
     for (const p of projects) {
       if (p.repo) expect(p.repo, p.id).toMatch(/^https:\/\/github\.com\/MatheusReimer\//)
+    }
+  })
+
+  it('lists every public client site and personal site as live, once', () => {
+    const expected = [...work.filter((p) => p.url).map((p) => p.url), ...projects.filter((p) => p.site).map((p) => p.site)]
+    expect(liveSites.map((s) => s.url)).toEqual(expected)
+    expect(new Set(liveSites.map((s) => new URL(s.url).host)).size).toBe(liveSites.length)
+    expect(new Set(liveSites.map((s) => s.id)).size).toBe(liveSites.length)
+  })
+
+  it('never lists an internal system or a source repo as live', () => {
+    const internal = work.filter((p) => !p.url).map((p) => p.id)
+    for (const s of liveSites) {
+      expect(internal, s.id).not.toContain(s.id)
+      expect(s.url, s.id).not.toMatch(/github\.com/)
     }
   })
 })

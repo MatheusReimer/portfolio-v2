@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test'
 import { experience } from '../../src/data/experience'
+import { liveSites } from '../../src/data/live'
 import { profile } from '../../src/data/profile'
 import { projects } from '../../src/data/projects'
 import { work } from '../../src/data/work'
 
-const SECTIONS = ['work', 'projects', 'experience', 'stack', 'about', 'contact']
+const SECTIONS = ['live', 'work', 'projects', 'experience', 'stack', 'about', 'contact']
 
 test.describe('portfolio', () => {
   test('loads without console errors and types out the hero', async ({ page }) => {
@@ -47,6 +48,38 @@ test.describe('portfolio', () => {
     for (const p of work) await expect(page.getByRole('heading', { name: p.client, exact: true })).toBeAttached()
     for (const p of projects) await expect(page.getByRole('heading', { name: p.name, exact: true })).toBeAttached()
     for (const r of experience) await expect(page.locator('.log-title', { hasText: r.company })).toBeAttached()
+  })
+
+  test('live section links to every production site', async ({ page }) => {
+    await page.goto('./')
+    const rail = page.getByRole('list', { name: 'Live sites' })
+    await expect(rail.getByRole('link')).toHaveCount(liveSites.length)
+    for (const s of liveSites) {
+      const link = rail.locator(`a[href="${s.url}"]`)
+      await expect(link).toHaveAccessibleName(new RegExp(`^${s.name},`))
+      await expect(link).toBeVisible()
+    }
+  })
+
+  test('live sites swipe sideways on phones and sit in a grid on desktop', async ({ page, isMobile }) => {
+    await page.goto('./')
+    await page.getByRole('button', { name: 'skip' }).click()
+    const rail = page.getByRole('list', { name: 'Live sites' })
+    await rail.scrollIntoViewIfNeeded()
+    const links = rail.getByRole('link')
+    const last = links.last()
+
+    if (isMobile) {
+      // The last card starts off screen; swiping the rail brings it into view.
+      await expect(last).not.toBeInViewport()
+      await rail.evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: 'instant' }))
+      await expect(last).toBeInViewport()
+    } else {
+      // No sideways scroll: every card is on screen and the first two share a row.
+      expect(await rail.evaluate((el) => el.scrollWidth - el.clientWidth)).toBe(0)
+      const [a, b] = [await links.nth(0).boundingBox(), await links.nth(1).boundingBox()]
+      expect(a?.y).toBe(b?.y)
+    }
   })
 
   test('external links open safely in a new tab', async ({ page }) => {

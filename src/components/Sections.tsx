@@ -1,4 +1,5 @@
 import { experience } from '@/data/experience'
+import { liveSites } from '@/data/live'
 import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { skills } from '@/data/skills'
@@ -35,6 +36,30 @@ function ClientMeta({ project }: { project: ClientProject }) {
       <span className="sep">/</span>
       {project.period}
     </p>
+  )
+}
+
+export function LiveSection() {
+  return (
+    <Section id="live" command="ls deployments/ --status=live" title="Live in production">
+      <p className="lede">Sites I built or helped build that are running today. Open any of them.</p>
+      <ul className="live-rail" aria-label="Live sites">
+        {liveSites.map((s) => (
+          <li key={s.id}>
+            <ExternalLink href={s.url} className="live-card" label={`${s.name}, ${displayHost(s.url)}`}>
+              <span className="live-status">
+                <span className="status-dot" aria-hidden="true" />
+                live<span className="sep">/</span>
+                {s.kind}
+              </span>
+              <span className="live-name">{s.name}</span>
+              <span className="live-blurb">{s.blurb}</span>
+              <span className="live-host">{displayHost(s.url)} ↗</span>
+            </ExternalLink>
+          </li>
+        ))}
+      </ul>
+    </Section>
   )
 }
 
@@ -121,15 +146,19 @@ export function ProjectsSection() {
                 </h3>
                 <p className="card-sub">{p.summary}</p>
               </div>
-              {p.repo && (
-                <ExternalLink href={p.repo} className="visit" label={`${p.name} source code on GitHub`}>
-                  source ↗
-                </ExternalLink>
-              )}
-              {!p.repo && p.site && (
-                <ExternalLink href={p.site} className="visit">
-                  {displayHost(p.site)} ↗
-                </ExternalLink>
+              {(p.repo || p.site) && (
+                <div className="visit-links">
+                  {p.site && (
+                    <ExternalLink href={p.site} className="visit">
+                      {displayHost(p.site)} ↗
+                    </ExternalLink>
+                  )}
+                  {p.repo && (
+                    <ExternalLink href={p.repo} className="visit" label={`${p.name} source code on GitHub`}>
+                      source ↗
+                    </ExternalLink>
+                  )}
+                </div>
               )}
               {!p.repo && !p.site && <span className="visit is-private">private repo</span>}
             </div>
