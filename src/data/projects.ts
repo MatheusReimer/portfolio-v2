@@ -49,12 +49,4 @@ export const projects: SideProject[] = [
     repo: 'https://github.com/MatheusReimer/RENA',
     site: 'https://rena.reviews',
   },
-  {
-    id: 'trama-fina',
-    name: 'Trama Fina',
-    summary: 'Storefront site for a handmade handbag business.',
-    stack: ['HTML', 'CSS', 'JavaScript'],
-    highlights: ['Lightweight static site with custom animations, built for a small local business.'],
-    site: 'https://tramafina.store',
-  },
 ]
