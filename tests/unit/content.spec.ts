@@ -5,9 +5,9 @@ import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { skills } from '@/data/skills'
 import { work } from '@/data/work'
-import { workflow, workflowStack, workflowTerminal } from '@/data/workflow'
+import { workflow, workflowNotes, workflowStack } from '@/data/workflow'
 
-const allContent = JSON.stringify({ profile, experience, projects, skills, work, workflow, workflowStack, workflowTerminal })
+const allContent = JSON.stringify({ profile, experience, projects, skills, work, workflow, workflowStack, workflowNotes })
 
 function collectUrls(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string' && /^[a-z]+:/i.test(value) && !value.startsWith('mailto:')) out.push(value)
@@ -25,7 +25,7 @@ function collectStrings(value: unknown, out: string[] = []): string[] {
 
 describe('content', () => {
   it('has no empty strings anywhere', () => {
-    const empty = collectStrings({ profile, experience, projects, skills, work, workflow, workflowStack, workflowTerminal }).filter((s) => s.trim() === '')
+    const empty = collectStrings({ profile, experience, projects, skills, work, workflow, workflowStack, workflowNotes }).filter((s) => s.trim() === '')
     expect(empty).toEqual([])
   })
 
@@ -52,7 +52,7 @@ describe('content', () => {
   })
 
   it('has unique ids', () => {
-    for (const list of [experience, projects, skills, work, workflow]) {
+    for (const list of [experience, projects, skills, work, workflow, workflowNotes]) {
       const ids = list.map((x) => x.id)
       expect(new Set(ids).size).toBe(ids.length)
     }

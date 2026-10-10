@@ -4,7 +4,7 @@ import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { skills } from '@/data/skills'
 import { work } from '@/data/work'
-import { workflow, workflowStack, workflowTerminal } from '@/data/workflow'
+import { workflow, workflowNotes, workflowStack } from '@/data/workflow'
 import { de } from './de'
 import { en } from './en'
 import type { Locale } from './locales'
@@ -51,7 +51,7 @@ export function getContent(locale: Locale) {
     experience: localExperience,
     workflow: localWorkflow,
     workflowStack,
-    workflowTerminal: t ? t.workflowTerminal : workflowTerminal,
+    workflowNotes: t ? workflowNotes.map((n) => ({ ...n, ...t.workflowNotes[n.id] })) : workflowNotes,
     skills,
     liveSites: buildLiveSites(localWork, localProjects),
   }

@@ -202,12 +202,21 @@ export const de: Translation = {
       },
     },
 
-    workflowTerminal: {
-      title: 'Alles passiert im Terminal',
-      body: [
-        'Ich arbeite in Wave Terminal und habe dafür eine Seitenleiste gebaut. Claude-Code-Hooks melden sich bei einem kleinen lokalen Server, sodass ich auf einen Blick sehe, welche Sitzungen arbeiten und welche auf mich warten, was die Warband-Worker gerade tun und wie viele Tokens ich heute im Vergleich zum Wochenschnitt verbraucht habe. Meine Projekte liegen dort auch, mit Aktionen per Klick.',
-        'Der Server nimmt nur Verbindungen von meinem eigenen Rechner an, und jeder Aufruf braucht ein Token. Die meisten Prompts diktiere ich, statt sie zu tippen.',
-      ],
+    workflowNotes: {
+      terminal: {
+        title: 'Alles passiert im Terminal',
+        body: [
+          'Ich arbeite in Wave Terminal und habe dafür eine Seitenleiste gebaut. Claude-Code-Hooks melden sich bei einem kleinen lokalen Server, sodass ich auf einen Blick sehe, welche Sitzungen arbeiten und welche auf mich warten, was die Warband-Worker gerade tun und wie viele Tokens ich heute im Vergleich zum Wochenschnitt verbraucht habe. Meine Projekte liegen dort auch, mit Aktionen per Klick.',
+          'Der Server nimmt nur Verbindungen von meinem eigenen Rechner an, und jeder Aufruf braucht ein Token. Die meisten Prompts diktiere ich, statt sie zu tippen.',
+        ],
+      },
+      crew: {
+        title: 'Jedes Modell, eine Truppe',
+        body: [
+          'Ich binde die Arbeit nicht an ein Modell. Claude Code ist heute mein Hauptwerkzeug, und die Tools, die ich gebaut habe, laufen darauf. Aber GNHF kann dieselbe Aufgabe an Claude, Copilot oder Codex geben, Gemini ist ebenfalls eingerichtet, und die Projektregeln stehen in AGENTS.md, einer einfachen Datei, die die meisten Coding-Agenten ohnehin lesen.',
+          'Deshalb sehe ich die Agenten als Truppe, nicht als Lieblingswerkzeug. Jeder wird für die Aufgabe ausgewählt, die gerade ansteht, und kann morgen ersetzt werden. Ich bin der Kommandeur: Ich setze das Ziel, gebe den Plan frei und beurteile, was zurückkommt.',
+        ],
+      },
     },
 
     experience: {

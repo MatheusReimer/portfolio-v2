@@ -59,13 +59,34 @@ export const workflow: WorkflowStage[] = [
   },
 ]
 
-/** The terminal the whole loop runs in. */
-export const workflowTerminal = {
-  title: 'Everything happens in the terminal',
-  body: [
-    'I work in Wave Terminal, and I built a sidebar for it. Claude Code hooks report to a small local server, so at a glance I can see which sessions are working and which are waiting on me, what the Warband workers are doing, and how many tokens I have spent today against the weekly average. My projects sit there too, with one-click actions.',
-    'The server only accepts connections from my own machine, and every call needs a token. Most of my prompts are dictated by voice rather than typed.',
-  ],
+/** Longer notes under the stages: where the loop runs and how I pick agents. */
+export interface WorkflowNote {
+  id: string
+  /** Shown as-is in every language: a path or file name. */
+  kicker: string
+  title: string
+  body: string[]
 }
+
+export const workflowNotes: WorkflowNote[] = [
+  {
+    id: 'terminal',
+    kicker: '~/.config/dashboard',
+    title: 'Everything happens in the terminal',
+    body: [
+      'I work in Wave Terminal, and I built a sidebar for it. Claude Code hooks report to a small local server, so at a glance I can see which sessions are working and which are waiting on me, what the Warband workers are doing, and how many tokens I have spent today against the weekly average. My projects sit there too, with one-click actions.',
+      'The server only accepts connections from my own machine, and every call needs a token. Most of my prompts are dictated by voice rather than typed.',
+    ],
+  },
+  {
+    id: 'crew',
+    kicker: 'AGENTS.md',
+    title: 'Any model, one warband',
+    body: [
+      "I don't tie the work to one model. Claude Code is my main harness today, and the tools I built run on it. But GNHF can hand the same task to Claude, Copilot or Codex, Gemini is set up too, and the project rules live in AGENTS.md, a plain file most coding agents already read.",
+      "So I think of the agents as a warband, not a favorite tool. Each one gets picked for the job in front of it and can be swapped out tomorrow. I'm the commander: I set the goal, approve the plan and judge what comes back.",
+    ],
+  },
+]
 
 export const workflowStack = ['Claude Code', 'MCP', 'Node.js', 'SQLite', 'Git worktrees', 'Agent hooks', 'Wave Terminal']

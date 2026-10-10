@@ -161,17 +161,21 @@ export function WorkflowSection({ c }: { c: Content }) {
         <span aria-hidden="true">↺ </span>
         {ui.workflow.loop}
       </p>
-      <article className="card flow-terminal" aria-labelledby="terminal-title">
-        <p className="card-kicker">~/.config/dashboard</p>
-        <h3 id="terminal-title" className="card-title">
-          {c.workflowTerminal.title}
-        </h3>
-        {c.workflowTerminal.body.map((p) => (
-          <p key={p.slice(0, 24)} className="flow-body">
-            {p}
-          </p>
+      <div className="grid flow-notes">
+        {c.workflowNotes.map((n) => (
+          <article key={n.id} className="card flow-note" aria-labelledby={`${n.id}-note`}>
+            <p className="card-kicker">{n.kicker}</p>
+            <h3 id={`${n.id}-note`} className="card-title">
+              {n.title}
+            </h3>
+            {n.body.map((p) => (
+              <p key={p.slice(0, 24)} className="flow-body">
+                {p}
+              </p>
+            ))}
+          </article>
         ))}
-      </article>
+      </div>
       <Chips items={c.workflowStack} label={ui.labels.stack(ui.workflow.title)} />
     </Section>
   )

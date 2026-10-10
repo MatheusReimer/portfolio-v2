@@ -932,10 +932,19 @@ a:hover {
   color: var(--text);
 }
 
-.flow-terminal {
-  margin-bottom: 16px;
+.flow-notes {
+  margin: 0 0 16px;
+}
+
+.flow-note {
   border-color: var(--border-strong);
   background: linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+
+/* Kickers here are paths and file names; keep their real case. */
+.flow-note .card-kicker {
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .flow-loop {

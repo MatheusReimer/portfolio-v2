@@ -3,7 +3,7 @@ import { experience } from '@/data/experience'
 import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { work } from '@/data/work'
-import { workflow, workflowTerminal } from '@/data/workflow'
+import { workflow, workflowNotes } from '@/data/workflow'
 import { formatPeriod, getContent, translations } from '@/i18n/content'
 import { locales } from '@/i18n/locales'
 
@@ -39,7 +39,8 @@ describe('translations', () => {
       expect(t.profile.about).toHaveLength(profile.about.length)
       expect(t.profile.principles).toHaveLength(profile.principles.length)
       expect(t.profile.languages).toHaveLength(profile.languages.length)
-      expect(t.workflowTerminal.body).toHaveLength(workflowTerminal.body.length)
+      expect(Object.keys(t.workflowNotes).sort()).toEqual(workflowNotes.map((n) => n.id).sort())
+      for (const n of workflowNotes) expect(t.workflowNotes[n.id].body, n.id).toHaveLength(n.body.length)
     })
 
     it('has no empty strings and no em dashes', () => {

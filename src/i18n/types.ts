@@ -62,8 +62,8 @@ export interface ContentTranslation {
   work: Record<string, { product: string; role: string; highlights: string[] }>
   projects: Record<string, { summary: string; highlights: string[] }>
   workflow: Record<string, { title: string; body: string }>
-  /** Same number of paragraphs as the English. */
-  workflowTerminal: { title: string; body: string[] }
+  /** Each note keeps the same number of paragraphs as the English. */
+  workflowNotes: Record<string, { title: string; body: string[] }>
   experience: Record<string, { role: string; location: string; summary: string; points: string[] }>
 }
 

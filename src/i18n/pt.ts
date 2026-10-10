@@ -203,12 +203,21 @@ export const pt: Translation = {
       },
     },
 
-    workflowTerminal: {
-      title: 'Tudo acontece no terminal',
-      body: [
-        'Eu trabalho no Wave Terminal e construí uma barra lateral para ele. Hooks do Claude Code mandam eventos para um pequeno servidor local, então eu vejo de relance quais sessões estão trabalhando e quais estão esperando por mim, o que os workers do Warband estão fazendo e quantos tokens gastei hoje em comparação com a média da semana. Meus projetos também ficam ali, com ações de um clique.',
-        'O servidor só aceita conexões da minha própria máquina, e toda chamada precisa de um token. A maior parte dos meus prompts eu dito por voz em vez de digitar.',
-      ],
+    workflowNotes: {
+      terminal: {
+        title: 'Tudo acontece no terminal',
+        body: [
+          'Eu trabalho no Wave Terminal e construí uma barra lateral para ele. Hooks do Claude Code mandam eventos para um pequeno servidor local, então eu vejo de relance quais sessões estão trabalhando e quais estão esperando por mim, o que os workers do Warband estão fazendo e quantos tokens gastei hoje em comparação com a média da semana. Meus projetos também ficam ali, com ações de um clique.',
+          'O servidor só aceita conexões da minha própria máquina, e toda chamada precisa de um token. A maior parte dos meus prompts eu dito por voz em vez de digitar.',
+        ],
+      },
+      crew: {
+        title: 'Qualquer modelo, a mesma tropa',
+        body: [
+          'Eu não amarro o trabalho a um modelo só. Hoje o Claude Code é minha ferramenta principal, e as ferramentas que eu construí rodam nele. Mas o GNHF consegue passar a mesma tarefa para o Claude, o Copilot ou o Codex, o Gemini também está configurado, e as regras do projeto ficam no AGENTS.md, um arquivo simples que a maioria dos agentes de código já lê.',
+          'Por isso eu vejo os agentes como uma tropa, não como uma ferramenta favorita. Cada um é escolhido para a tarefa da vez e pode ser trocado amanhã. Eu sou o comandante: defino o objetivo, aprovo o plano e julgo o que volta.',
+        ],
+      },
     },
 
     experience: {
