@@ -28,6 +28,17 @@ export const pt: Translation = {
       privateRepo: 'repositório privado',
       source: 'código',
     },
+    workflow: {
+      title: 'Workflow com IA',
+      lede: 'Hoje eu faço a maior parte do meu trabalho de engenharia com agentes de IA, no trabalho e nos meus projetos. Com o tempo fui montando um ciclo em volta deles. Quase todas as ferramentas são código meu; as marcadas como adotadas são open source.',
+      listLabel: 'Etapas do workflow',
+      built: 'própria',
+      adopted: 'adotada',
+      loop: 'de volta à memória. Cada rodada começa do que a anterior aprendeu.',
+      graphLabel: 'Diagrama do ciclo: memória, planejamento, construção, validação, medição e aprendizado, com o aprendizado voltando para a memória. Eu aprovo o plano e as lições.',
+      me: 'eu',
+      approves: 'aprovo + guio',
+    },
     experience: { title: 'Experiência', at: 'na' },
     stack: { title: 'Stack' },
     about: { title: 'Sobre', languages: 'idiomas' },
@@ -163,6 +174,41 @@ export const pt: Translation = {
           'Busca dados de catálogo em várias APIs públicas de mídia, com fallback entre elas.',
         ],
       },
+    },
+
+    workflow: {
+      memory: {
+        title: 'Memória que vai se acumulando',
+        body: 'Um agente começa toda sessão sem saber nada do projeto. Por isso cada um carrega dois arquivos: as minhas preferências gerais e as anotações daquele projeto. Quando eu corrijo um erro, a correção vira uma regra escrita. Um hook me avisa quando um projeto não tem arquivo de memória, ou quando ele cresceu tanto que custa mais tokens do que economiza.',
+      },
+      plan: {
+        title: 'Planos em que eu posso clicar',
+        body: 'Antes de escrever código, o agente monta o plano numa página HTML que abre dentro do meu terminal. Eu comento partes dela, cito trechos de volta e escolho entre as opções. Ele lê meu feedback por uma pequena CLI e revisa. Pegar uma suposição errada aqui sai muito mais barato do que pegar num pull request.',
+      },
+      build: {
+        title: 'Três workers ao mesmo tempo',
+        body: 'Quando um pedido se divide em partes independentes, um agente comandante entrega cada parte a um worker. Cada worker tem sua própria git worktree e seu próprio painel no terminal, então um não atrapalha o outro. Rodam até três por vez. Eu leio o que eles reportam em vez de ficar olhando eles digitarem.',
+      },
+      validate: {
+        title: 'Nada vai para produção na confiança',
+        body: 'Toda mudança passa por um gate local antes de virar pull request: rebase, uma revisão feita por um agente novo que tenta quebrar a mudança, testes, lint e depois CI. Para bugs eu acrescento uma regra minha. Primeiro reproduzir o bug de ponta a ponta, e confirmar a correção do mesmo jeito.',
+      },
+      measure: {
+        title: 'Saber quanto custa',
+        body: 'O Munitorum lê cada transcript de agente para um SQLite e calcula os tokens do jeito que a conta cobra. A parte cara normalmente é o contexto: um arquivo grande lido no começo da sessão é pago de novo a cada turno depois dele. Ele ranqueia esse tipo de desperdício, e um hook avisa o agente no meio da sessão quando um resultado de ferramenta fica grande demais.',
+      },
+      learn: {
+        title: 'Fechando o ciclo',
+        body: 'Uma vez por semana o agente revisa as próprias sessões mais caras e sugere lições numa página do War Table. Eu fico com algumas e descarto o resto. As que eu mantenho voltam para a memória, e a próxima sessão já começa com elas.',
+      },
+    },
+
+    workflowTerminal: {
+      title: 'Tudo acontece no terminal',
+      body: [
+        'Eu trabalho no Wave Terminal e construí uma barra lateral para ele. Hooks do Claude Code mandam eventos para um pequeno servidor local, então eu vejo de relance quais sessões estão trabalhando e quais estão esperando por mim, o que os workers do Warband estão fazendo e quantos tokens gastei hoje em comparação com a média da semana. Meus projetos também ficam ali, com ações de um clique.',
+        'O servidor só aceita conexões da minha própria máquina, e toda chamada precisa de um token. A maior parte dos meus prompts eu dito por voz em vez de digitar.',
+      ],
     },
 
     experience: {

@@ -3,6 +3,7 @@ import { experience } from '@/data/experience'
 import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { work } from '@/data/work'
+import { workflow, workflowTerminal } from '@/data/workflow'
 import { formatPeriod, getContent, translations } from '@/i18n/content'
 import { locales } from '@/i18n/locales'
 
@@ -27,6 +28,7 @@ describe('translations', () => {
       expect(Object.keys(t.work).sort()).toEqual(work.map((p) => p.id).sort())
       expect(Object.keys(t.projects).sort()).toEqual(projects.map((p) => p.id).sort())
       expect(Object.keys(t.experience).sort()).toEqual(experience.map((r) => r.id).sort())
+      expect(Object.keys(t.workflow).sort()).toEqual(workflow.map((s) => s.id).sort())
     })
 
     it('keeps every list the same length as the English', () => {
@@ -37,6 +39,7 @@ describe('translations', () => {
       expect(t.profile.about).toHaveLength(profile.about.length)
       expect(t.profile.principles).toHaveLength(profile.principles.length)
       expect(t.profile.languages).toHaveLength(profile.languages.length)
+      expect(t.workflowTerminal.body).toHaveLength(workflowTerminal.body.length)
     })
 
     it('has no empty strings and no em dashes', () => {
@@ -49,12 +52,14 @@ describe('translations', () => {
       const c = getContent(locale)
       expect(c.profile.tagline).not.toBe(profile.tagline)
       for (const p of c.work) expect(p.product, p.id).not.toBe(work.find((w) => w.id === p.id)!.product)
+      for (const s of c.workflow) expect(s.body, s.id).not.toBe(workflow.find((w) => w.id === s.id)!.body)
     })
 
     it('never changes links, ids or stacks', () => {
       const c = getContent(locale)
       expect(c.work.map((p) => [p.id, p.url, p.stack])).toEqual(work.map((p) => [p.id, p.url, p.stack]))
       expect(c.projects.map((p) => [p.id, p.repo, p.site])).toEqual(projects.map((p) => [p.id, p.repo, p.site]))
+      expect(c.workflow.map((s) => [s.id, s.tool, s.origin])).toEqual(workflow.map((s) => [s.id, s.tool, s.origin]))
       expect(c.liveSites.map((s) => s.url)).toEqual(getContent('en').liveSites.map((s) => s.url))
     })
   })

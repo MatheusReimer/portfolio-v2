@@ -5,8 +5,9 @@ import { profile } from '@/data/profile'
 import { projects } from '@/data/projects'
 import { skills } from '@/data/skills'
 import { work } from '@/data/work'
+import { workflow, workflowStack, workflowTerminal } from '@/data/workflow'
 
-const allContent = JSON.stringify({ profile, experience, projects, skills, work })
+const allContent = JSON.stringify({ profile, experience, projects, skills, work, workflow, workflowStack, workflowTerminal })
 
 function collectUrls(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string' && /^[a-z]+:/i.test(value) && !value.startsWith('mailto:')) out.push(value)
@@ -24,7 +25,7 @@ function collectStrings(value: unknown, out: string[] = []): string[] {
 
 describe('content', () => {
   it('has no empty strings anywhere', () => {
-    const empty = collectStrings({ profile, experience, projects, skills, work }).filter((s) => s.trim() === '')
+    const empty = collectStrings({ profile, experience, projects, skills, work, workflow, workflowStack, workflowTerminal }).filter((s) => s.trim() === '')
     expect(empty).toEqual([])
   })
 
@@ -51,7 +52,7 @@ describe('content', () => {
   })
 
   it('has unique ids', () => {
-    for (const list of [experience, projects, skills, work]) {
+    for (const list of [experience, projects, skills, work, workflow]) {
       const ids = list.map((x) => x.id)
       expect(new Set(ids).size).toBe(ids.length)
     }
@@ -80,5 +81,14 @@ describe('content', () => {
       expect(internal, s.id).not.toContain(s.id)
       expect(s.url, s.id).not.toMatch(/github\.com/)
     }
+  })
+
+  it('marks only my own tools as built in the AI workflow', () => {
+    // Open-source tools I run inside the loop must never be claimed as my own.
+    const adopted = ['no-mistakes', 'Treehouse', 'GNHF']
+    for (const s of workflow) {
+      if (s.origin === 'built') expect(adopted, s.id).not.toContain(s.tool)
+    }
+    expect(workflow.find((s) => s.tool === 'no-mistakes')?.origin).toBe('adopted')
   })
 })

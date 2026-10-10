@@ -14,6 +14,19 @@ export interface UiMessages {
   live: { title: string; lede: string; listLabel: string; client: string; personal: string }
   work: { title: string; lede: string; featured: string; internal: string }
   projects: { title: string; lede: string; privateRepo: string; source: string }
+  workflow: {
+    title: string
+    lede: string
+    listLabel: string
+    built: string
+    adopted: string
+    loop: string
+    /** One-sentence summary of the diagram for screen readers. */
+    graphLabel: string
+    /** Centre of the diagram: me, and what I approve. Keep both short; they sit inside a small circle. */
+    me: string
+    approves: string
+  }
   experience: { title: string; at: string }
   stack: { title: string }
   about: { title: string; languages: string }
@@ -48,6 +61,9 @@ export interface ContentTranslation {
   }
   work: Record<string, { product: string; role: string; highlights: string[] }>
   projects: Record<string, { summary: string; highlights: string[] }>
+  workflow: Record<string, { title: string; body: string }>
+  /** Same number of paragraphs as the English. */
+  workflowTerminal: { title: string; body: string[] }
   experience: Record<string, { role: string; location: string; summary: string; points: string[] }>
 }
 

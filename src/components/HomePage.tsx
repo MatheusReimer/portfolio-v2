@@ -7,6 +7,7 @@ import {
   LiveSection,
   ProjectsSection,
   StackSection,
+  WorkflowSection,
   WorkSection,
 } from '@/components/Sections'
 import { TerminalHero } from '@/components/TerminalHero'
@@ -14,7 +15,7 @@ import { WaveBackdrop } from '@/components/WaveBackdrop'
 import { getContent } from '@/i18n/content'
 import { localeInfo, localeHref, locales, type Locale } from '@/i18n/locales'
 
-const NAV = ['live', 'work', 'projects', 'experience', 'stack', 'about', 'contact']
+const NAV = ['live', 'work', 'ai', 'projects', 'experience', 'stack', 'about', 'contact']
 
 /** Plain links to each language's page, so switching works without JavaScript. */
 function LanguageSwitcher({ current, label }: { current: Locale; label: string }) {
@@ -109,6 +110,7 @@ export function HomePage({ locale }: { locale: Locale }) {
 
         <LiveSection c={c} />
         <WorkSection c={c} />
+        <WorkflowSection c={c} />
         <ProjectsSection c={c} />
         <ExperienceSection c={c} />
         <StackSection c={c} />

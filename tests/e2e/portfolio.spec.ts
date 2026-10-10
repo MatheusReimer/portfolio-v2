@@ -4,9 +4,10 @@ import { liveSites } from '../../src/data/live'
 import { profile } from '../../src/data/profile'
 import { projects } from '../../src/data/projects'
 import { work } from '../../src/data/work'
+import { workflow } from '../../src/data/workflow'
 import { getContent } from '../../src/i18n/content'
 
-const SECTIONS = ['live', 'work', 'projects', 'experience', 'stack', 'about', 'contact']
+const SECTIONS = ['live', 'work', 'ai', 'projects', 'experience', 'stack', 'about', 'contact']
 
 test.describe('portfolio', () => {
   test('loads without console errors and types out the hero', async ({ page }) => {
@@ -49,6 +50,12 @@ test.describe('portfolio', () => {
     for (const p of work) await expect(page.getByRole('heading', { name: p.client, exact: true })).toBeAttached()
     for (const p of projects) await expect(page.getByRole('heading', { name: p.name, exact: true })).toBeAttached()
     for (const r of experience) await expect(page.locator('.log-title', { hasText: r.company })).toBeAttached()
+    const stages = page.getByRole('list', { name: 'Workflow stages' }).getByRole('listitem')
+    await expect(stages).toHaveCount(workflow.length)
+    for (const s of workflow) await expect(page.getByRole('heading', { name: s.title, exact: true })).toBeAttached()
+    const graph = page.getByRole('img', { name: /^Diagram of the loop/ })
+    await expect(graph).toBeVisible()
+    await expect(graph.locator('.flow-node')).toHaveCount(workflow.length)
   })
 
   test('live section links to every production site', async ({ page }) => {

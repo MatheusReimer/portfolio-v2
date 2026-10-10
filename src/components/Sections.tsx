@@ -3,6 +3,7 @@ import { formatPeriod, type Content } from '@/i18n/content'
 import type { UiMessages } from '@/i18n/types'
 import { ExternalLink, displayHost } from './ExternalLink'
 import { Section } from './Section'
+import { WorkflowGraph } from './WorkflowGraph'
 
 function Chips({ items, label }: { items: string[]; label: string }) {
   return (
@@ -124,6 +125,54 @@ export function WorkSection({ c }: { c: Content }) {
           </article>
         ))}
       </div>
+    </Section>
+  )
+}
+
+export function WorkflowSection({ c }: { c: Content }) {
+  const { ui } = c
+  return (
+    <Section id="ai" command="cat ~/.claude/workflow.md" title={ui.workflow.title}>
+      <p className="lede">{ui.workflow.lede}</p>
+      <WorkflowGraph
+        stages={c.workflow}
+        label={ui.workflow.graphLabel}
+        me={ui.workflow.me}
+        approves={ui.workflow.approves}
+      />
+      <ol className="flow" aria-label={ui.workflow.listLabel}>
+        {c.workflow.map((s, i) => (
+          <li key={s.id} className="card flow-step" aria-labelledby={`${s.id}-step`}>
+            <p className="flow-head">
+              <span className="flow-index" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className="flow-tool">{s.tool}</span>
+              <span className={`flow-origin is-${s.origin}`}>{ui.workflow[s.origin]}</span>
+            </p>
+            <h3 id={`${s.id}-step`} className="card-title">
+              {s.title}
+            </h3>
+            <p className="flow-body">{s.body}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="flow-loop">
+        <span aria-hidden="true">↺ </span>
+        {ui.workflow.loop}
+      </p>
+      <article className="card flow-terminal" aria-labelledby="terminal-title">
+        <p className="card-kicker">~/.config/dashboard</p>
+        <h3 id="terminal-title" className="card-title">
+          {c.workflowTerminal.title}
+        </h3>
+        {c.workflowTerminal.body.map((p) => (
+          <p key={p.slice(0, 24)} className="flow-body">
+            {p}
+          </p>
+        ))}
+      </article>
+      <Chips items={c.workflowStack} label={ui.labels.stack(ui.workflow.title)} />
     </Section>
   )
 }

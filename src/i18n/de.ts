@@ -27,6 +27,17 @@ export const de: Translation = {
       privateRepo: 'privates Repo',
       source: 'Quellcode',
     },
+    workflow: {
+      title: 'KI-Workflow',
+      lede: 'Den Großteil meiner Entwicklungsarbeit mache ich inzwischen mit KI-Agenten, im Job und in eigenen Projekten. Mit der Zeit habe ich einen Kreislauf um sie herum gebaut. Die meisten Tools darin sind mein eigener Code; die als übernommen markierten sind Open Source.',
+      listLabel: 'Workflow-Schritte',
+      built: 'eigen',
+      adopted: 'übernommen',
+      loop: 'zurück zum Gedächtnis. Jede Runde startet mit dem, was die letzte gelernt hat.',
+      graphLabel: 'Diagramm des Kreislaufs: Gedächtnis, Planung, Umsetzung, Prüfung, Messung und Lernen, wobei das Lernen zurück ins Gedächtnis fließt. Ich gebe den Plan und die Lektionen frei.',
+      me: 'ich',
+      approves: 'prüfe + lenke',
+    },
     experience: { title: 'Berufserfahrung', at: 'bei' },
     stack: { title: 'Stack' },
     about: { title: 'Über mich', languages: 'Sprachen' },
@@ -162,6 +173,41 @@ export const de: Translation = {
           'Bezieht Katalogdaten aus mehreren öffentlichen Medien-APIs, mit Fallbacks zwischen ihnen.',
         ],
       },
+    },
+
+    workflow: {
+      memory: {
+        title: 'Ein Gedächtnis, das mitwächst',
+        body: 'Ein Agent beginnt jede Sitzung, ohne etwas über das Projekt zu wissen. Deshalb lädt jeder zwei Dateien: meine allgemeinen Vorlieben und die Notizen zu diesem Projekt. Wenn ich einen Fehler korrigiere, wird die Korrektur als Regel festgehalten. Ein Hook warnt mich, wenn ein Projekt keine Gedächtnisdatei hat oder sie so lang geworden ist, dass sie mehr Tokens kostet, als sie spart.',
+      },
+      plan: {
+        title: 'Pläne, die ich anklicken kann',
+        body: 'Bevor Code entsteht, schreibt der Agent den Plan auf eine HTML-Seite, die sich direkt in meinem Terminal öffnet. Ich kommentiere Teile davon, zitiere Zeilen zurück und wähle zwischen Optionen. Er liest mein Feedback über eine kleine CLI und überarbeitet. Eine falsche Annahme hier zu finden ist viel günstiger als in einem Pull Request.',
+      },
+      build: {
+        title: 'Drei Worker gleichzeitig',
+        body: 'Wenn sich eine Anfrage in unabhängige Teile zerlegen lässt, gibt ein Kommandeur-Agent jeden Teil an einen Worker. Jeder Worker bekommt seinen eigenen Git-Worktree und seinen eigenen Terminalbereich, damit sie sich nicht in die Quere kommen. Bis zu drei laufen gleichzeitig. Ich lese, was sie berichten, statt ihnen beim Tippen zuzusehen.',
+      },
+      validate: {
+        title: 'Nichts wird auf Vertrauen ausgeliefert',
+        body: 'Jede Änderung durchläuft ein lokales Gate, bevor sie ein Pull Request wird: Rebase, ein Review durch einen frischen Agenten, der sie zu brechen versucht, Tests, Lint und dann CI. Für Bugs habe ich eine eigene Regel. Erst den Fehler durchgängig reproduzieren, dann die Lösung auf dieselbe Weise bestätigen.',
+      },
+      measure: {
+        title: 'Wissen, was es kostet',
+        body: 'Munitorum liest jedes Agenten-Transkript in SQLite ein und berechnet die Tokens so, wie die Rechnung es tut. Teuer ist meistens der Kontext: Eine große Datei, die früh in einer Sitzung gelesen wird, wird in jeder späteren Runde erneut bezahlt. Es ordnet diese Art von Verschwendung, und ein Hook warnt den Agenten mitten in der Sitzung, wenn ein einzelnes Tool-Ergebnis zu groß ist.',
+      },
+      learn: {
+        title: 'Den Kreis schließen',
+        body: 'Einmal pro Woche geht der Agent seine eigenen teuersten Sitzungen durch und schlägt Lektionen auf einer War-Table-Seite vor. Einige behalte ich, den Rest verwerfe ich. Die behaltenen fließen zurück ins Gedächtnis, und die nächste Sitzung startet mit ihnen.',
+      },
+    },
+
+    workflowTerminal: {
+      title: 'Alles passiert im Terminal',
+      body: [
+        'Ich arbeite in Wave Terminal und habe dafür eine Seitenleiste gebaut. Claude-Code-Hooks melden sich bei einem kleinen lokalen Server, sodass ich auf einen Blick sehe, welche Sitzungen arbeiten und welche auf mich warten, was die Warband-Worker gerade tun und wie viele Tokens ich heute im Vergleich zum Wochenschnitt verbraucht habe. Meine Projekte liegen dort auch, mit Aktionen per Klick.',
+        'Der Server nimmt nur Verbindungen von meinem eigenen Rechner an, und jeder Aufruf braucht ein Token. Die meisten Prompts diktiere ich, statt sie zu tippen.',
+      ],
     },
 
     experience: {

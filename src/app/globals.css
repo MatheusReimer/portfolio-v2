@@ -781,6 +781,170 @@ a:hover {
   border-radius: 999px;
 }
 
+/* ---------------------------------------------------------------- workflow */
+
+.flow-graph {
+  max-width: 520px;
+  margin: 24px auto 8px;
+}
+
+.flow-graph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.flow-graph text {
+  text-anchor: middle;
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.flow-arc {
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+}
+
+.flow-arc.is-return {
+  stroke: var(--warm);
+}
+
+.flow-arrowhead {
+  fill: var(--faint);
+}
+
+.flow-arrowhead.is-return {
+  fill: var(--warm);
+}
+
+.motion-ok .flow-arc {
+  animation: flow-dash 1.4s linear infinite;
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+.flow-approve {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 5;
+}
+
+.flow-me {
+  fill: var(--accent-dim);
+  stroke: var(--accent-strong);
+  stroke-width: 1.5;
+}
+
+.flow-me-name {
+  fill: var(--text-strong);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.flow-me-role {
+  fill: var(--muted);
+  font-size: 15px;
+}
+
+.flow-node rect {
+  fill: var(--surface-solid);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+
+.flow-node.is-built rect {
+  stroke: var(--accent-strong);
+}
+
+.flow-node-stage {
+  fill: var(--text-strong);
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.flow-node-index {
+  fill: var(--accent);
+}
+
+.flow-node-tool {
+  fill: var(--rose);
+  font-size: 16px;
+}
+
+.flow {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 820px) {
+  .flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.flow-step {
+  gap: 10px;
+}
+
+.flow-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.flow-index {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.flow-tool {
+  color: var(--rose);
+}
+
+.flow-origin {
+  margin-left: auto;
+  padding: 1px 8px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--faint);
+}
+
+.flow-origin.is-built {
+  color: var(--text-strong);
+  background: var(--accent-dim);
+  border-color: var(--accent-strong);
+}
+
+.flow-body {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.flow-terminal {
+  margin-bottom: 16px;
+  border-color: var(--border-strong);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+
+.flow-loop {
+  margin: 18px 0 14px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--warm);
+}
+
 .metric-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
